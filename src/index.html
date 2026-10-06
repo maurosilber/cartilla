@@ -27,7 +27,9 @@
   #main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: calc(100vh - 70px); height: calc(100dvh - 70px); }
   #map { height: 100%; }
   #side { display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--line); }
-  #status { padding: 8px 12px; color: var(--muted); border-bottom: 1px solid var(--line); }
+  #statusbar { display: flex; gap: 8px; align-items: center; padding: 6px 12px; border-bottom: 1px solid var(--line); }
+  #status { flex: 1; color: var(--muted); }
+  #all { white-space: nowrap; }
   #tablewrap { overflow: auto; flex: 1; }
   table { border-collapse: collapse; width: 100%; }
   th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -38,6 +40,7 @@
   tbody tr:hover, tbody tr.sel { background: var(--hl); }
   td.dist { white-space: nowrap; text-align: right; }
   .small { font-size: 12px; color: var(--muted); }
+  .badge { display: inline-block; font-size: 11px; line-height: 1.5; padding: 0 7px; margin: 0 2px 2px 0; border-radius: 999px; background: var(--hl); color: var(--accent); border: 1px solid var(--accent); white-space: nowrap; }
   .leaflet-popup-content { font-size: 13px; }
   @media (max-width: 800px) {
     /* 16px keeps iOS from zooming in when an input gets focus. */
@@ -68,7 +71,6 @@
     td.dist { grid-row: 1; grid-column: 2; }
     td.dist.none { display: none; }
     td.direccion, td.esp, td.tel, td.plan { grid-column: 1 / -1; }
-    td.plan::before { content: "Plan "; }
   }
 </style>
 </head>
@@ -103,7 +105,10 @@
 <div id="main">
   <div id="map"></div>
   <div id="side">
-    <div id="status"></div>
+    <div id="statusbar">
+      <span id="status"></span>
+      <button id="all" title="Ajustar el mapa para ver todos los prestadores filtrados">Ver todos</button>
+    </div>
     <div id="tablewrap">
       <table>
         <thead><tr>
@@ -124,14 +129,23 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const norm = (s) => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
-const rows = CARTILLA.map((r, i) => ({
+// The source lists a provider once per plan; merge rows that differ only in plan.
+const merged = new Map();
+for (const { plan, ...r } of CARTILLA) {
+  const key = JSON.stringify(r);
+  if (!merged.has(key)) merged.set(key, { ...r, plans: [] });
+  merged.get(key).plans.push(plan);
+}
+const rows = [...merged.values()].map((r, i) => ({
   ...r, i,
+  plan: r.plans.join(", "),
   esps: r.especialidades.split(",").map((s) => s.trim()).filter(Boolean),
   text: norm([r.nombre, r.direccion, r.localidad, r.especialidades].join(" ")),
 }));
+const badges = (r) => r.plans.map((p) => `<span class="badge">${esc(p)}</span>`).join(" ");
 
 // Filter options
-for (const p of [...new Set(rows.map((r) => r.plan))].sort()) $("plan").add(new Option(p, p));
+for (const p of [...new Set(rows.flatMap((r) => r.plans))].sort()) $("plan").add(new Option(p, p));
 for (const e of [...new Set(rows.flatMap((r) => r.esps))].sort((a, b) => a.localeCompare(b, "es")))
   $("esp").add(new Option(e, e));
 
@@ -142,16 +156,18 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · Geocodificación: <a href="https://usig.buenosaires.gob.ar/">USIG GCBA</a>',
 }).addTo(map);
 const layer = L.layerGroup().addTo(map);
-const markers = new Map();
+const MARKER = { radius: 6, weight: 1, color: "#fff", fillColor: "#1a7f5a", fillOpacity: 0.85 };
+const MARKER_SEL = { radius: 10, weight: 3, color: "#fff", fillColor: "#e8590c", fillOpacity: 1 };
+let selected = null, filtered = [];
 for (const r of rows) {
   if (r.lat == null) continue;
-  r.marker = L.circleMarker([r.lat, r.lon], { radius: 6, weight: 1, color: "#fff", fillColor: "#1a7f5a", fillOpacity: 0.85 })
+  r.marker = L.circleMarker([r.lat, r.lon], MARKER)
     .bindPopup(() => popup(r));
-  r.marker.on("click", () => highlight(r, false));
+  r.marker.on("click", () => highlight(r));
 }
 function popup(r) {
   return `<b>${esc(r.nombre)}</b><br>${esc(r.direccion)}, ${esc(r.localidad)}<br>
-    <span class="small">${esc(r.especialidades)}</span><br>${esc(r.telefonos)}<br>
+    <span class="small">${esc(r.especialidades)}</span><br>${esc(r.telefonos)}<br>${badges(r)}<br>
     ${r.dist != null ? `<b>${fmt(r.dist)}</b> · ` : ""}<a href="${esc(r.maps_url)}" target="_blank" rel="noopener">Google Maps</a>`;
 }
 
@@ -212,12 +228,27 @@ function update(fit = false) {
   const plan = $("plan").value, esp = $("esp").value, q = norm($("q").value.trim());
 
   for (const r of rows) r.dist = origin && r.lat != null ? haversine(origin, r) : null;
-  let out = rows.filter((r) =>
-    (!plan || r.plan === plan) &&
+  filtered = rows.filter((r) =>
+    (!plan || r.plans.includes(plan)) &&
     (!esp || r.esps.includes(esp)) &&
     (!q || r.text.includes(q)) &&
     (!origin || (r.dist != null && r.dist <= radius)));
 
+  if (circle) circle.remove();
+  circle = origin ? L.circle([origin.lat, origin.lon], { radius: radius * 1000, color: "#1a7f5a", weight: 1, fillOpacity: 0.06, interactive: false }).addTo(map) : null;
+
+  layer.clearLayers();
+  for (const r of filtered) if (r.marker) layer.addLayer(r.marker);
+
+  // Fitting the map triggers moveend, which renders the table.
+  if (fit && circle) map.fitBounds(circle.getBounds());
+  else renderTable();
+}
+
+// The table lists only the filtered providers inside the current map view.
+function renderTable() {
+  const bounds = map.getBounds();
+  const out = filtered.filter((r) => r.marker && bounds.contains(r.marker.getLatLng()));
   const { sortK, sortDir } = state;
   out.sort((a, b) => {
     const x = a[sortK], y = b[sortK];
@@ -225,15 +256,9 @@ function update(fit = false) {
     return (typeof x === "number" ? x - y : String(x).localeCompare(String(y), "es")) * sortDir;
   });
 
-  if (circle) circle.remove();
-  circle = origin ? L.circle([origin.lat, origin.lon], { radius: radius * 1000, color: "#1a7f5a", weight: 1, fillOpacity: 0.06, interactive: false }).addTo(map) : null;
-
-  layer.clearLayers();
-  for (const r of out) if (r.marker) layer.addLayer(r.marker);
-
-  const noGeo = out.filter((r) => r.lat == null).length;
-  $("status").textContent = `${out.length} prestadores` +
-    (origin ? ` a menos de ${radius} km` : " · elegí una ubicación para filtrar por distancia") +
+  const noGeo = filtered.filter((r) => !r.marker).length;
+  $("status").textContent = `${out.length} de ${filtered.length} prestadores visibles en el mapa` +
+    (origin ? ` a menos de ${+$("radius").value} km` : " · elegí una ubicación para filtrar por distancia") +
     (noGeo ? ` · ${noGeo} sin coordenadas` : "");
 
   $("tb").innerHTML = out.map((r) => `<tr data-i="${r.i}">
@@ -242,22 +267,27 @@ function update(fit = false) {
     <td class="direccion">${esc(r.direccion)}<br><span class="small">${esc(r.localidad)}</span></td>
     <td class="small esp">${esc(r.esps.join(", "))}</td>
     <td class="small tel">${esc(r.telefonos)}</td>
-    <td class="small plan">${esc(r.plan)}</td></tr>`).join("");
+    <td class="plan">${badges(r)}</td></tr>`).join("");
+  if (selected) document.querySelector(`tr[data-i="${selected.i}"]`)?.classList.add("sel");
   document.querySelectorAll("th").forEach((th) =>
     th.dataset.k === sortK ? (th.dataset.dir = sortDir) : delete th.dataset.dir);
-
-  if (fit && circle) map.fitBounds(circle.getBounds());
 }
 
-function highlight(r, pan = true) {
+function showAll() {
+  const pts = filtered.filter((r) => r.marker).map((r) => r.marker.getLatLng());
+  if (pts.length) map.fitBounds(L.latLngBounds(pts), { padding: [20, 20], maxZoom: 16 });
+}
+$("all").onclick = showAll;
+map.on("moveend", renderTable);
+
+// Marks the provider in the table and on the map, without moving the map.
+function highlight(r) {
   document.querySelectorAll("tr.sel").forEach((t) => t.classList.remove("sel"));
   const tr = document.querySelector(`tr[data-i="${r.i}"]`);
-  if (tr) { tr.classList.add("sel"); if (!pan) tr.scrollIntoView({ block: "nearest" }); }
-  if (pan && r.marker) {
-    const top = $("map").getBoundingClientRect().top;
-    if (top < 0) window.scrollBy({ top, behavior: "smooth" });
-    map.setView(r.marker.getLatLng(), Math.max(map.getZoom(), 15)); r.marker.openPopup();
-  }
+  tr?.classList.add("sel");
+  selected?.marker?.setStyle(MARKER);
+  selected = r;
+  r.marker?.setStyle(MARKER_SEL).bringToFront();
 }
 $("tb").onclick = (e) => {
   const tr = e.target.closest("tr");
@@ -267,7 +297,7 @@ document.querySelectorAll("th").forEach((th) => (th.onclick = () => {
   const k = th.dataset.k;
   state.sortDir = state.sortK === k ? -state.sortDir : 1;
   state.sortK = k;
-  update();
+  renderTable();
 }));
 $("toggle").onclick = () => {
   const open = document.querySelector("header").classList.toggle("open");
@@ -278,6 +308,7 @@ $("radius").onchange = () => update(true);
 for (const id of ["plan", "esp", "q"]) $(id).oninput = () => update();
 
 update();
+showAll();
 </script>
 </body>
 </html>
