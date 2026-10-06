@@ -15,15 +15,18 @@
   * { box-sizing: border-box; }
   /* Header on top, map and table filling the rest of the viewport. */
   body { margin: 0; font: 14px/1.4 system-ui, sans-serif; background: var(--bg); color: var(--fg); display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
-  header { padding: 12px 16px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: end; }
-  header h1 { font-size: 18px; margin: 0 16px 4px 0; }
+  header { padding: 10px 16px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; }
+  header h1 { font-size: 18px; margin: 0; }
   label { display: flex; flex-direction: column; font-size: 12px; color: var(--muted); gap: 2px; }
   input, select, button { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
   button { cursor: pointer; }
   button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .row { display: flex; gap: 4px; }
-  #addr { width: 260px; }
-  #filters { display: contents; }
+  #addr { width: 320px; }
+  /* Filters sit above the table they filter, as a grid of equal cells. */
+  #filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px 12px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  #filters input, #filters select { width: 100%; min-width: 0; height: 30px; }
+  #filters input[type=range] { padding: 0; border: 0; accent-color: var(--accent); }
   #toggle { display: none; }
   #main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); flex: 1; min-height: 0; }
   #map { height: 100%; }
@@ -47,16 +50,15 @@
     /* 16px keeps iOS from zooming in when an input gets focus. */
     body, input, select, button { font-size: 16px; }
     body { display: block; height: auto; }
-    header { padding: 10px 12px; gap: 8px; align-items: center; }
-    header h1 { flex: 1; margin: 0; }
-    #toggle { display: block; }
-    .grp { flex: 1 1 100%; order: 1; }
+    header { padding: 10px 12px; gap: 8px; }
+    .grp { flex: 1 1 100%; }
     .row { width: 100%; }
     #addr { flex: 1; width: auto; min-width: 0; }
     input, select, button { padding: 8px 10px; }
-    #filters { display: none; flex: 1 1 100%; order: 2; flex-direction: column; gap: 8px; }
-    header.open #filters { display: flex; }
-    #filters input:not([type=range]), #filters select { width: 100%; }
+    #toggle { display: block; }
+    #filters { display: none; grid-template-columns: minmax(0, 1fr); }
+    #side.open #filters { display: grid; }
+    #filters input, #filters select { height: auto; }
     #main { grid-template-columns: minmax(0, 1fr); height: auto; }
     #map { height: 45vh; height: 45dvh; }
     #side { border-left: 0; }
@@ -88,27 +90,27 @@
       </span>
     </label>
   </div>
-  <button id="toggle" aria-expanded="false" aria-controls="filters">Filtros</button>
-  <div id="filters">
-  <label><span>Distancia máx.: <span id="rv"></span></span>
-    <input id="radius" type="range" min="0.5" max="50" step="0.5" value="5">
-  </label>
-  <label>Plan
-    <select id="plan"><option value="">Todos</option></select>
-  </label>
-  <label>Especialidad
-    <select id="esp"><option value="">Todas</option></select>
-  </label>
-  <label>Texto
-    <input id="q" type="search" placeholder="nombre, dirección…">
-  </label>
-  </div>
 </header>
 <div id="main">
   <div id="map"></div>
   <div id="side">
+    <div id="filters">
+      <label>Texto
+        <input id="q" type="search" placeholder="nombre, dirección…">
+      </label>
+      <label>Plan
+        <select id="plan"><option value="">Todos</option></select>
+      </label>
+      <label>Especialidad
+        <select id="esp"><option value="">Todas</option></select>
+      </label>
+      <label><span>Distancia máx.: <span id="rv"></span></span>
+        <input id="radius" type="range" min="0.5" max="50" step="0.5" value="5">
+      </label>
+    </div>
     <div id="statusbar">
       <span id="status"></span>
+      <button id="toggle" aria-expanded="false" aria-controls="filters">Filtros</button>
       <button id="all" title="Ajustar el mapa para ver todos los prestadores filtrados">Ver todos</button>
     </div>
     <div id="tablewrap">
@@ -302,7 +304,7 @@ document.querySelectorAll("th").forEach((th) => (th.onclick = () => {
   renderTable();
 }));
 $("toggle").onclick = () => {
-  const open = document.querySelector("header").classList.toggle("open");
+  const open = $("side").classList.toggle("open");
   $("toggle").setAttribute("aria-expanded", open);
 };
 $("radius").oninput = () => update();
