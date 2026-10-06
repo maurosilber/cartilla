@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cartilla DOSUBA</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="cartilla.js"></script>
+<style>
+  :root { --bg: #fff; --fg: #1d1d1f; --muted: #6b6b70; --line: #e3e3e6; --accent: #1a7f5a; --hl: #eef7f2; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #17181a; --fg: #ececee; --muted: #9a9aa0; --line: #2c2d30; --accent: #4cc58f; --hl: #1d2a24; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.4 system-ui, sans-serif; background: var(--bg); color: var(--fg); }
+  header { padding: 12px 16px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: end; }
+  header h1 { font-size: 18px; margin: 0 16px 4px 0; }
+  label { display: flex; flex-direction: column; font-size: 12px; color: var(--muted); gap: 2px; }
+  input, select, button { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
+  button { cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .row { display: flex; gap: 4px; }
+  #addr { width: 260px; }
+  #main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: calc(100vh - 70px); }
+  #map { height: 100%; }
+  #side { display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--line); }
+  #status { padding: 8px 12px; color: var(--muted); border-bottom: 1px solid var(--line); }
+  #tablewrap { overflow: auto; flex: 1; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { position: sticky; top: 0; background: var(--bg); cursor: pointer; user-select: none; white-space: nowrap; }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover, tbody tr.sel { background: var(--hl); }
+  td.dist { white-space: nowrap; text-align: right; }
+  .small { font-size: 12px; color: var(--muted); }
+  .leaflet-popup-content { font-size: 13px; }
+  @media (max-width: 800px) {
+    #main { grid-template-columns: 1fr; height: auto; }
+    #map { height: 55vh; }
+    #side { border-left: 0; }
+    #tablewrap { max-height: none; }
+    #addr { width: 100%; }
+    header > label, header > .grp { flex: 1 1 100%; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Cartilla DOSUBA</h1>
+  <div class="grp">
+    <label>Ubicación (dirección, clic en el mapa o GPS)
+      <span class="row">
+        <input id="addr" placeholder="ej. Córdoba 3933">
+        <button id="go" class="primary">Buscar</button>
+        <button id="gps" title="Usar mi ubicación">📍</button>
+      </span>
+    </label>
+  </div>
+  <label>Distancia máx.: <span id="rv"></span>
+    <input id="radius" type="range" min="0.5" max="50" step="0.5" value="5">
+  </label>
+  <label>Plan
+    <select id="plan"><option value="">Todos</option></select>
+  </label>
+  <label>Especialidad
+    <select id="esp"><option value="">Todas</option></select>
+  </label>
+  <label>Texto
+    <input id="q" placeholder="nombre, dirección…">
+  </label>
+</header>
+<div id="main">
+  <div id="map"></div>
+  <div id="side">
+    <div id="status"></div>
+    <div id="tablewrap">
+      <table>
+        <thead><tr>
+          <th data-k="dist">Dist.</th>
+          <th data-k="nombre">Nombre</th>
+          <th data-k="direccion">Dirección</th>
+          <th data-k="especialidades">Especialidades</th>
+          <th data-k="telefonos">Teléfonos</th>
+          <th data-k="plan">Plan</th>
+        </tr></thead>
+        <tbody id="tb"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const norm = (s) => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+const rows = CARTILLA.map((r, i) => ({
+  ...r, i,
+  esps: r.especialidades.split(",").map((s) => s.trim()).filter(Boolean),
+  text: norm([r.nombre, r.direccion, r.localidad, r.especialidades].join(" ")),
+}));
+
+// Filter options
+for (const p of [...new Set(rows.map((r) => r.plan))].sort()) $("plan").add(new Option(p, p));
+for (const e of [...new Set(rows.flatMap((r) => r.esps))].sort((a, b) => a.localeCompare(b, "es")))
+  $("esp").add(new Option(e, e));
+
+// Map
+const map = L.map("map").setView([-34.6037, -58.4416], 12);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19,
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · Geocodificación: <a href="https://usig.buenosaires.gob.ar/">USIG GCBA</a>',
+}).addTo(map);
+const layer = L.layerGroup().addTo(map);
+const markers = new Map();
+for (const r of rows) {
+  if (r.lat == null) continue;
+  r.marker = L.circleMarker([r.lat, r.lon], { radius: 6, weight: 1, color: "#fff", fillColor: "#1a7f5a", fillOpacity: 0.85 })
+    .bindPopup(() => popup(r));
+  r.marker.on("click", () => highlight(r, false));
+}
+function popup(r) {
+  return `<b>${esc(r.nombre)}</b><br>${esc(r.direccion)}, ${esc(r.localidad)}<br>
+    <span class="small">${esc(r.especialidades)}</span><br>${esc(r.telefonos)}<br>
+    ${r.dist != null ? `<b>${fmt(r.dist)}</b> · ` : ""}<a href="${esc(r.maps_url)}" target="_blank" rel="noopener">Google Maps</a>`;
+}
+
+let origin = null, originMarker = null, circle = null;
+const state = { sortK: "dist", sortDir: 1 };
+
+function setOrigin(lat, lon, label) {
+  origin = { lat, lon };
+  if (originMarker) originMarker.remove();
+  originMarker = L.marker([lat, lon]).addTo(map).bindTooltip(label || "Ubicación elegida");
+  update(true);
+}
+map.on("click", (e) => setOrigin(e.latlng.lat, e.latlng.lng));
+
+// Address search: USIG normalizer (GCBA), falling back to Nominatim (OSM)
+async function geocode(q) {
+  try {
+    const u = `https://servicios.usig.buenosaires.gob.ar/normalizar/?geocodificar=TRUE&srid=4326&direccion=${encodeURIComponent(q)}`;
+    const d = await (await fetch(u)).json();
+    const c = (d.direccionesNormalizadas || []).find((c) => c.coordenadas);
+    if (c) return { lat: +c.coordenadas.y, lon: +c.coordenadas.x, label: c.direccion };
+  } catch (e) { console.warn(e); }
+  const u = `https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=ar&q=${encodeURIComponent(q + ", Buenos Aires")}`;
+  const d = await (await fetch(u)).json();
+  if (d.length) return { lat: +d[0].lat, lon: +d[0].lon, label: d[0].display_name };
+  return null;
+}
+async function search() {
+  const q = $("addr").value.trim();
+  if (!q) return;
+  $("status").textContent = "Buscando dirección…";
+  try {
+    const g = await geocode(q);
+    if (!g) { $("status").textContent = `No se encontró "${q}".`; return; }
+    setOrigin(g.lat, g.lon, g.label);
+  } catch (e) {
+    $("status").textContent = "Error al geocodificar: " + e.message;
+  }
+}
+$("go").onclick = search;
+$("addr").onkeydown = (e) => { if (e.key === "Enter") search(); };
+$("gps").onclick = () => navigator.geolocation?.getCurrentPosition(
+  (p) => setOrigin(p.coords.latitude, p.coords.longitude, "Mi ubicación"),
+  (e) => ($("status").textContent = "No se pudo obtener la ubicación: " + e.message),
+);
+
+function haversine(a, b) {
+  const R = 6371, rad = Math.PI / 180;
+  const dLat = (b.lat - a.lat) * rad, dLon = (b.lon - a.lon) * rad;
+  const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLon / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+const fmt = (km) => (km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`);
+
+function update(fit = false) {
+  const radius = +$("radius").value;
+  $("rv").textContent = `${radius} km`;
+  const plan = $("plan").value, esp = $("esp").value, q = norm($("q").value.trim());
+
+  for (const r of rows) r.dist = origin && r.lat != null ? haversine(origin, r) : null;
+  let out = rows.filter((r) =>
+    (!plan || r.plan === plan) &&
+    (!esp || r.esps.includes(esp)) &&
+    (!q || r.text.includes(q)) &&
+    (!origin || (r.dist != null && r.dist <= radius)));
+
+  const { sortK, sortDir } = state;
+  out.sort((a, b) => {
+    const x = a[sortK], y = b[sortK];
+    if (x == null) return 1; if (y == null) return -1;
+    return (typeof x === "number" ? x - y : String(x).localeCompare(String(y), "es")) * sortDir;
+  });
+
+  if (circle) circle.remove();
+  circle = origin ? L.circle([origin.lat, origin.lon], { radius: radius * 1000, color: "#1a7f5a", weight: 1, fillOpacity: 0.06, interactive: false }).addTo(map) : null;
+
+  layer.clearLayers();
+  for (const r of out) if (r.marker) layer.addLayer(r.marker);
+
+  const noGeo = out.filter((r) => r.lat == null).length;
+  $("status").textContent = `${out.length} prestadores` +
+    (origin ? ` a menos de ${radius} km` : " · elegí una ubicación para filtrar por distancia") +
+    (noGeo ? ` · ${noGeo} sin coordenadas` : "");
+
+  $("tb").innerHTML = out.map((r) => `<tr data-i="${r.i}">
+    <td class="dist">${r.dist != null ? fmt(r.dist) : "–"}</td>
+    <td>${esc(r.nombre)}</td>
+    <td>${esc(r.direccion)}<br><span class="small">${esc(r.localidad)}</span></td>
+    <td class="small">${esc(r.esps.join(", "))}</td>
+    <td class="small">${esc(r.telefonos)}</td>
+    <td class="small">${esc(r.plan)}</td></tr>`).join("");
+
+  if (fit && circle) map.fitBounds(circle.getBounds());
+}
+
+function highlight(r, pan = true) {
+  document.querySelectorAll("tr.sel").forEach((t) => t.classList.remove("sel"));
+  const tr = document.querySelector(`tr[data-i="${r.i}"]`);
+  if (tr) { tr.classList.add("sel"); if (!pan) tr.scrollIntoView({ block: "nearest" }); }
+  if (pan && r.marker) { map.setView(r.marker.getLatLng(), Math.max(map.getZoom(), 15)); r.marker.openPopup(); }
+}
+$("tb").onclick = (e) => {
+  const tr = e.target.closest("tr");
+  if (tr) highlight(rows[+tr.dataset.i]);
+};
+document.querySelectorAll("th").forEach((th) => (th.onclick = () => {
+  const k = th.dataset.k;
+  state.sortDir = state.sortK === k ? -state.sortDir : 1;
+  state.sortK = k;
+  update();
+}));
+$("radius").oninput = () => update();
+$("radius").onchange = () => update(true);
+for (const id of ["plan", "esp", "q"]) $(id).oninput = () => update();
+
+update();
+</script>
+</body>
+</html>

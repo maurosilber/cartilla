@@ -1,0 +1,66 @@
+default_install_hook_types = ["pre-commit"]
+
+[[repos]]
+repo = "builtin"
+hooks = [
+  { id = "check-added-large-files", args = ["--maxkb=1024"] },
+  { id = "check-case-conflict" },
+  { id = "check-illegal-windows-names" },
+  { id = "check-json" },
+  { id = "check-merge-conflict", args = ["--assume-in-merge"] },
+  { id = "check-symlinks" },
+  { id = "check-toml" },
+  { id = "check-vcs-permalinks" },
+  { id = "check-yaml" },
+  { id = "destroyed-symlinks" },
+  { id = "detect-private-key" },
+  { id = "end-of-file-fixer" },
+  { id = "fix-byte-order-marker" },
+  # The CSV is written with CRLF line endings by Python's csv module.
+  { id = "mixed-line-ending", args = ["--fix=lf"], exclude.glob = "cartilla.csv" },
+]
+
+[[repos]]
+repo = "local"
+
+[[repos.hooks]]
+id = "python-format"
+name = "Format Python files with Ruff"
+language = "system"
+entry = "pixi run ruff format"
+types = ["python"]
+
+[[repos.hooks]]
+id = "python-lint"
+name = "Lint Python files with Ruff"
+language = "system"
+entry = "pixi run ruff check --fix"
+types = ["python"]
+
+[[repos.hooks]]
+id = "toml-format"
+name = "Format TOML files with Tombi"
+language = "system"
+entry = "pixi run tombi format"
+files.glob = "*.toml"
+
+[[repos.hooks]]
+id = "toml-lint"
+name = "Lint TOML files with Tombi"
+language = "system"
+entry = "pixi run tombi check"
+files.glob = "*.toml"
+
+[[repos.hooks]]
+id = "actionlint"
+name = "Lint GitHub Actions workflows with actionlint"
+language = "system"
+entry = "pixi run actionlint"
+files.glob = ".github/workflows/*.{yml,yaml}"
+
+[[repos.hooks]]
+id = "zizmor"
+name = "Audit GitHub Actions workflows with zizmor"
+language = "system"
+entry = "pixi run zizmor --offline"
+files.glob = ".github/workflows/*.{yml,yaml}"

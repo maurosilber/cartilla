@@ -1,0 +1,51 @@
+[workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-arm64"]
+
+[environments]
+default = ["site", "lint"]
+# Only what the build needs.
+ci = ["site"]
+
+[feature.site]
+dependencies = {
+  python = "3.14.*",
+}
+
+[feature.site.tasks]
+# Downloads the provider directory again (~1 min), into cartilla.csv.
+# Not a dependency of `build`, so the site is built from the committed data.
+fetch = "python fetch_cartilla.py"
+# Geocodes cartilla.csv into cartilla.js. Only new addresses reach the network:
+# the rest come from geocode_cache.json, which is committed.
+geocode = {
+  cmd = "python geocode_cartilla.py",
+  inputs = [
+    "geocode_cartilla.py",
+    "cartilla.csv",
+    "geocode_cache.json",
+  ],
+  outputs = [
+    "cartilla.js",
+  ]
+}
+# What is published to GitHub Pages.
+build = {
+  cmd = "rm -rf dist && mkdir dist && cp index.html cartilla.js dist",
+  depends-on = [
+    "geocode",
+  ]
+}
+serve = { cmd = "python -m http.server --directory dist 8000", depends-on = ["build"] }
+
+[feature.lint]
+dependencies = {
+  actionlint = "*",
+  prek = "*",
+  ruff = "*",
+  tombi = "*",
+  zizmor = "*",
+}
+tasks = {
+  lint = "prek run --all-files",
+}
