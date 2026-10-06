@@ -22,7 +22,9 @@
   button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .row { display: flex; gap: 4px; }
   #addr { width: 260px; }
-  #main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: calc(100vh - 70px); }
+  #filters { display: contents; }
+  #toggle { display: none; }
+  #main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: calc(100vh - 70px); height: calc(100dvh - 70px); }
   #map { height: 100%; }
   #side { display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--line); }
   #status { padding: 8px 12px; color: var(--muted); border-bottom: 1px solid var(--line); }
@@ -30,18 +32,43 @@
   table { border-collapse: collapse; width: 100%; }
   th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
   th { position: sticky; top: 0; background: var(--bg); cursor: pointer; user-select: none; white-space: nowrap; }
+  th[data-dir="1"]::after { content: " ▲"; }
+  th[data-dir="-1"]::after { content: " ▼"; }
   tbody tr { cursor: pointer; }
   tbody tr:hover, tbody tr.sel { background: var(--hl); }
   td.dist { white-space: nowrap; text-align: right; }
   .small { font-size: 12px; color: var(--muted); }
   .leaflet-popup-content { font-size: 13px; }
   @media (max-width: 800px) {
-    #main { grid-template-columns: 1fr; height: auto; }
-    #map { height: 55vh; }
+    /* 16px keeps iOS from zooming in when an input gets focus. */
+    body, input, select, button { font-size: 16px; }
+    header { padding: 10px 12px; gap: 8px; align-items: center; }
+    header h1 { flex: 1; margin: 0; }
+    #toggle { display: block; }
+    .grp { flex: 1 1 100%; order: 1; }
+    .row { width: 100%; }
+    #addr { flex: 1; width: auto; min-width: 0; }
+    input, select, button { padding: 8px 10px; }
+    #filters { display: none; flex: 1 1 100%; order: 2; flex-direction: column; gap: 8px; }
+    header.open #filters { display: flex; }
+    #filters input:not([type=range]), #filters select { width: 100%; }
+    #main { grid-template-columns: minmax(0, 1fr); height: auto; }
+    #map { height: 45vh; height: 45dvh; }
     #side { border-left: 0; }
-    #tablewrap { max-height: none; }
-    #addr { width: 100%; }
-    header > label, header > .grp { flex: 1 1 100%; }
+    #tablewrap { overflow: visible; }
+    /* Results as cards; the header becomes a row of sort buttons. */
+    table, tbody { display: block; }
+    thead { display: block; position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 1px solid var(--line); }
+    thead tr { display: flex; gap: 6px; overflow-x: auto; padding: 8px 12px; }
+    th { position: static; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 13px; font-weight: normal; color: var(--muted); }
+    th[data-dir] { color: var(--fg); border-color: var(--accent); }
+    tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+    td { display: block; padding: 0; border: 0; }
+    td.nombre { grid-row: 1; grid-column: 1; font-weight: 600; }
+    td.dist { grid-row: 1; grid-column: 2; }
+    td.dist.none { display: none; }
+    td.direccion, td.esp, td.tel, td.plan { grid-column: 1 / -1; }
+    td.plan::before { content: "Plan "; }
   }
 </style>
 </head>
@@ -51,12 +78,14 @@
   <div class="grp">
     <label>Ubicación (dirección, clic en el mapa o GPS)
       <span class="row">
-        <input id="addr" placeholder="ej. Córdoba 3933">
+        <input id="addr" type="search" enterkeyhint="search" autocomplete="street-address" placeholder="ej. Córdoba 3933">
         <button id="go" class="primary">Buscar</button>
         <button id="gps" title="Usar mi ubicación">📍</button>
       </span>
     </label>
   </div>
+  <button id="toggle" aria-expanded="false" aria-controls="filters">Filtros</button>
+  <div id="filters">
   <label>Distancia máx.: <span id="rv"></span>
     <input id="radius" type="range" min="0.5" max="50" step="0.5" value="5">
   </label>
@@ -67,8 +96,9 @@
     <select id="esp"><option value="">Todas</option></select>
   </label>
   <label>Texto
-    <input id="q" placeholder="nombre, dirección…">
+    <input id="q" type="search" placeholder="nombre, dirección…">
   </label>
+  </div>
 </header>
 <div id="main">
   <div id="map"></div>
@@ -207,12 +237,14 @@ function update(fit = false) {
     (noGeo ? ` · ${noGeo} sin coordenadas` : "");
 
   $("tb").innerHTML = out.map((r) => `<tr data-i="${r.i}">
-    <td class="dist">${r.dist != null ? fmt(r.dist) : "–"}</td>
-    <td>${esc(r.nombre)}</td>
-    <td>${esc(r.direccion)}<br><span class="small">${esc(r.localidad)}</span></td>
-    <td class="small">${esc(r.esps.join(", "))}</td>
-    <td class="small">${esc(r.telefonos)}</td>
-    <td class="small">${esc(r.plan)}</td></tr>`).join("");
+    <td class="dist${r.dist != null ? "" : " none"}">${r.dist != null ? fmt(r.dist) : "–"}</td>
+    <td class="nombre">${esc(r.nombre)}</td>
+    <td class="direccion">${esc(r.direccion)}<br><span class="small">${esc(r.localidad)}</span></td>
+    <td class="small esp">${esc(r.esps.join(", "))}</td>
+    <td class="small tel">${esc(r.telefonos)}</td>
+    <td class="small plan">${esc(r.plan)}</td></tr>`).join("");
+  document.querySelectorAll("th").forEach((th) =>
+    th.dataset.k === sortK ? (th.dataset.dir = sortDir) : delete th.dataset.dir);
 
   if (fit && circle) map.fitBounds(circle.getBounds());
 }
@@ -221,7 +253,11 @@ function highlight(r, pan = true) {
   document.querySelectorAll("tr.sel").forEach((t) => t.classList.remove("sel"));
   const tr = document.querySelector(`tr[data-i="${r.i}"]`);
   if (tr) { tr.classList.add("sel"); if (!pan) tr.scrollIntoView({ block: "nearest" }); }
-  if (pan && r.marker) { map.setView(r.marker.getLatLng(), Math.max(map.getZoom(), 15)); r.marker.openPopup(); }
+  if (pan && r.marker) {
+    const top = $("map").getBoundingClientRect().top;
+    if (top < 0) window.scrollBy({ top, behavior: "smooth" });
+    map.setView(r.marker.getLatLng(), Math.max(map.getZoom(), 15)); r.marker.openPopup();
+  }
 }
 $("tb").onclick = (e) => {
   const tr = e.target.closest("tr");
@@ -233,6 +269,10 @@ document.querySelectorAll("th").forEach((th) => (th.onclick = () => {
   state.sortK = k;
   update();
 }));
+$("toggle").onclick = () => {
+  const open = document.querySelector("header").classList.toggle("open");
+  $("toggle").setAttribute("aria-expanded", open);
+};
 $("radius").oninput = () => update();
 $("radius").onchange = () => update(true);
 for (const id of ["plan", "esp", "q"]) $(id).oninput = () => update();
