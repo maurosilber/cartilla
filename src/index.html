@@ -26,6 +26,7 @@
   /* Filters sit above the table they filter, as a grid of equal cells. */
   #filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px 12px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
   #filters input, #filters select { width: 100%; min-width: 0; height: 30px; }
+  #filters h2 { grid-column: 1 / -1; margin: 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); }
   #filters input[type=range] { padding: 0; border: 0; accent-color: var(--accent); }
   #toggle { display: none; }
   #main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); flex: 1; min-height: 0; }
@@ -57,6 +58,7 @@
     input, select, button { padding: 8px 10px; }
     #toggle { display: block; }
     #filters { display: none; grid-template-columns: minmax(0, 1fr); }
+    #filters h2 { display: none; }
     #side.open #filters { display: grid; }
     #filters input, #filters select { height: auto; }
     #main { grid-template-columns: minmax(0, 1fr); height: auto; }
@@ -95,6 +97,7 @@
   <div id="map"></div>
   <div id="side">
     <div id="filters">
+      <h2>Filtros</h2>
       <label>Texto
         <input id="q" type="search" placeholder="nombre, dirección…">
       </label>
@@ -110,7 +113,7 @@
     </div>
     <div id="statusbar">
       <span id="status"></span>
-      <button id="toggle" aria-expanded="false" aria-controls="filters">Filtros</button>
+      <button id="toggle" class="primary" aria-expanded="false" aria-controls="filters">Filtros</button>
       <button id="all" title="Ajustar el mapa para ver todos los prestadores filtrados">Ver todos</button>
     </div>
     <div id="tablewrap">
