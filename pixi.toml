@@ -13,25 +13,25 @@ dependencies = {
 }
 
 [feature.site.tasks]
-# Downloads the provider directory again (~1 min), into cartilla.csv.
+# Downloads the provider directory again (~1 min), into data/.
 # Not a dependency of `build`, so the site is built from the committed data.
-fetch = "python fetch_cartilla.py"
-# Geocodes cartilla.csv into cartilla.js. Only new addresses reach the network:
-# the rest come from geocode_cache.json, which is committed.
+fetch = "python src/fetch_cartilla.py data/cartilla.csv"
+# Geocodes the providers for the map. Only new addresses reach the network:
+# the rest come from the cache in data/, which is committed.
 geocode = {
-  cmd = "python geocode_cartilla.py",
+  cmd = "python src/geocode_cartilla.py data/cartilla.csv data/geocode_cache.json dist/cartilla.js",
   inputs = [
-    "geocode_cartilla.py",
-    "cartilla.csv",
-    "geocode_cache.json",
+    "src/geocode_cartilla.py",
+    "data/cartilla.csv",
+    "data/geocode_cache.json",
   ],
   outputs = [
-    "cartilla.js",
+    "dist/cartilla.js",
   ]
 }
 # What is published to GitHub Pages.
 build = {
-  cmd = "rm -rf dist && mkdir dist && cp index.html cartilla.js dist",
+  cmd = "cp src/index.html dist",
   depends-on = [
     "geocode",
   ]

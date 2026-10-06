@@ -17,7 +17,7 @@ hooks = [
   { id = "end-of-file-fixer" },
   { id = "fix-byte-order-marker" },
   # The CSV is written with CRLF line endings by Python's csv module.
-  { id = "mixed-line-ending", args = ["--fix=lf"], exclude.glob = "cartilla.csv" },
+  { id = "mixed-line-ending", args = ["--fix=lf"], exclude.glob = "data/cartilla.csv" },
 ]
 
 [[repos]]

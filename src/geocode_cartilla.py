@@ -1,10 +1,10 @@
-"""Geocode cartilla.csv into cartilla.js (loaded by index.html).
+"""Geocode a cartilla CSV into the cartilla.js loaded by index.html.
 
 Tries the USIG normalizer (GCBA, covers CABA and AMBA) first, picking the
 candidate whose locality matches; falls back to OpenStreetMap Nominatim.
-Results are cached in geocode_cache.json so reruns only query new addresses.
+Results are cached in a JSON file so reruns only query new addresses.
 
-Usage: python3 geocode_cartilla.py
+Usage: python3 geocode_cartilla.py cartilla.csv geocode_cache.json cartilla.js
 """
 
 import csv
@@ -19,7 +19,6 @@ from pathlib import Path
 
 USIG = "https://servicios.usig.buenosaires.gob.ar/normalizar/?{}"
 NOMINATIM = "https://nominatim.openstreetmap.org/search?{}"
-CACHE = Path("geocode_cache.json")
 UA = "dosuba-cartilla-map/1.0"
 AMBA = "-59.4,-34.0,-57.7,-35.3"  # lon_min,lat_max,lon_max,lat_min
 
@@ -93,9 +92,10 @@ def geocode(addr, localidad):
     return None
 
 
-def main():
-    cache = json.loads(CACHE.read_text()) if CACHE.exists() else {}
-    with open("cartilla.csv", encoding="utf-8", newline="") as f:
+def main(csv_path, cache_path, out):
+    cache_path, out = Path(cache_path), Path(out)
+    cache = json.loads(cache_path.read_text()) if cache_path.exists() else {}
+    with open(csv_path, encoding="utf-8", newline="") as f:
         rows = list(csv.DictReader(f))
     for i, row in enumerate(rows):
         addr = street(row["direccion"])
@@ -103,12 +103,15 @@ def main():
         if key not in cache:
             cache[key] = geocode(addr, row["localidad"])
             print(f"[{i + 1}/{len(rows)}] {key} -> {cache[key]}", file=sys.stderr)
-            CACHE.write_text(json.dumps(cache, ensure_ascii=False, indent=0) + "\n")
+            cache_path.write_text(
+                json.dumps(cache, ensure_ascii=False, indent=0) + "\n"
+            )
         lat, lon, src = cache[key] or (None, None, None)
         row.update(lat=lat, lon=lon, geo=src)
 
     data = json.dumps(rows, ensure_ascii=False)
-    Path("cartilla.js").write_text(f"const CARTILLA = {data};\n", encoding="utf-8")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(f"const CARTILLA = {data};\n", encoding="utf-8")
     missing = [r for r in rows if r["lat"] is None]
     print(
         f"Wrote {len(rows)} rows, {len(missing)} without coordinates", file=sys.stderr
@@ -118,4 +121,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(*sys.argv[1:])

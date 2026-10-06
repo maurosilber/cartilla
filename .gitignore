@@ -1,6 +1,5 @@
 # pixi environments
 .pixi/*
 !.pixi/config.toml
-# Built by `pixi run geocode` and `pixi run build`.
-cartilla.js
+# Built by `pixi run build`.
 dist/
