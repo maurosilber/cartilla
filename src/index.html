@@ -63,9 +63,9 @@
   /* The slider shows once a point is chosen, taking the place of the address search, until reset. */
   #main:not(.has-origin) .radius, #main.has-origin #addr, #main.has-origin #go { display: none; }
   .filters .row button { height: 30px; padding-block: 0; }
-  /* A reset button next to each filter, faded while the filter is not set. */
-  .filters .reset { flex: none; width: 30px; padding: 0; color: var(--muted); }
-  .filters .reset:disabled { opacity: 0.35; cursor: default; }
+  /* A reset button next to each filter, in the accent color while the filter is set, faded otherwise. */
+  .filters .reset { flex: none; width: 30px; padding: 0; color: var(--accent); border-color: var(--accent); background: var(--hl); }
+  .filters .reset:disabled { opacity: 0.35; cursor: default; color: var(--muted); border-color: var(--line); background: var(--bg); }
   input[type=search]::-webkit-search-cancel-button { display: none; }
   #filters h2 { margin: 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); }
   .filters input[type=range] { padding: 0; border: 0; accent-color: var(--accent); }
