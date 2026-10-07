@@ -139,7 +139,8 @@
         <select id="tipo"><option value="">Todos</option></select>
       </label>
       <label>Especialidad
-        <select id="esp"><option value="">Todas</option></select>
+        <input id="esp" type="search" list="esps" placeholder="Todas">
+        <datalist id="esps"></datalist>
       </label>
       <label><span>Distancia máx.: <span id="rv"></span></span>
         <input id="radius" type="range" min="0" step="1">
@@ -267,11 +268,11 @@ async function load(oss) {
   if (!origin) showAll();
 }
 
-// Specialties offered by the chosen tipo, keeping the current choice if it still applies.
-// The cartillas spell them differently ("Cardiologia", "CARDIOLOGIA"): options are keyed
-// by norm(), labeled preferring the spelling that is not all caps.
+// Specialties offered by the chosen tipo, suggested while typing the especialidad.
+// The cartillas spell them differently ("Cardiologia", "CARDIOLOGIA"): suggestions are
+// deduplicated by norm(), preferring the spelling that is not all caps.
 function fillEsps() {
-  const tipo = $("tipo").value, cur = $("esp").value, labels = new Map();
+  const tipo = $("tipo").value, labels = new Map();
   for (const r of rows) {
     if (tipo && r.tipo !== tipo) continue;
     r.esps.forEach((e, j) => {
@@ -280,9 +281,27 @@ function fillEsps() {
     });
   }
   const esps = [...labels].sort((a, b) => a[1].localeCompare(b[1], "es"));
-  $("esp").length = 1;
-  for (const [k, l] of esps) $("esp").add(new Option(l, k));
-  $("esp").value = labels.has(cur) ? cur : "";
+  $("esps").replaceChildren(...esps.map(([, l]) => new Option(l)));
+}
+
+// Edit distance between two strings, for typo-tolerant matching.
+function levenshtein(a, b) {
+  let prev = [...Array(b.length + 1).keys()];
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    for (let j = 1; j <= b.length; j++)
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] !== b[j - 1]));
+    prev = cur;
+  }
+  return prev[b.length];
+}
+// Whether a specialty (normalized) fuzzily matches the typed words: each word must be
+// part of one of its words, or the start of one with a typo or two ("cardilogia",
+// "traumatologo" match "Cardiologia", "Traumatologia").
+function espMatches(key, words) {
+  const kws = key.split(/[^a-z0-9]+/).filter(Boolean);
+  return words.every((w) => kws.some((k) => k.includes(w) ||
+    (w.length >= 4 && levenshtein(w, k.slice(0, w.length)) <= (w.length >= 8 ? 2 : 1))));
 }
 
 function popup(r) {
@@ -346,13 +365,18 @@ const fmt = (km) => (km < 1 ? `${Math.round(km * 1000)} m` : `${+km.toFixed(1)} 
 function update(fit = false) {
   const radius = radiusKm();
   $("rv").textContent = fmt(radius);
-  const [planOs, plan] = $("plan").value.split("|"), tipo = $("tipo").value, esp = $("esp").value, q = norm($("q").value.trim());
+  const [planOs, plan] = $("plan").value.split("|"), tipo = $("tipo").value, esp = norm($("esp").value).split(/[^a-z0-9]+/).filter(Boolean), q = norm($("q").value.trim());
 
+  // Matched once per distinct specialty, not once per provider.
+  const espHit = new Map(), espOk = (k) => {
+    if (!espHit.has(k)) espHit.set(k, espMatches(k, esp));
+    return espHit.get(k);
+  };
   for (const r of rows) r.dist = origin && r.lat != null ? haversine(origin, r) : null;
   filtered = rows.filter((r) =>
     (!plan || (r.os === planOs && r.plans.includes(plan))) &&
     (!tipo || r.tipo === tipo) &&
-    (!esp || r.espKeys.includes(esp)) &&
+    (!esp.length || r.espKeys.some(espOk)) &&
     (!q || r.text.includes(q)) &&
     (!origin || (r.dist != null && r.dist <= radius)));
 
