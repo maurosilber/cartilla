@@ -94,6 +94,8 @@
     #filters { display: none; }
     #filters h2 { display: none; }
     #side.open #filters { display: flex; }
+    /* The panel opens below the Filtros button, so the button stays in place. */
+    #statusbar { order: -1; }
     #filters section > * { flex-basis: 100%; }
     #filters input, #filters select, #filters .row button { height: auto; }
     #filters .reset { width: 40px; }
