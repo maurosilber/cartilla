@@ -87,13 +87,16 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/ruff-0.16.10-hc0d6792_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/tk-8.6.13-noxft_h1df4ec4_4.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/tombi-1.7.3-hf19af3b_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/tornado-6.5.10-py314h89acca1_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zizmor-1.30.1-hf19af3b_0.conda
       - conda: https://conda.anaconda.org/conda-forge/linux-64/zstd-1.5.7-hb78ec9c_7.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2026.7.22-hbd8a1cb_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/livereload-2.7.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/python_abi-3.14-9_cp314.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tzdata-2026c-h151e31d_0.conda
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2026.7.22-hbd8a1cb_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/noarch/livereload-2.7.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/python_abi-3.14-9_cp314.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/tzdata-2026c-h151e31d_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/actionlint-1.7.12-h7969508_0.conda
@@ -114,6 +117,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/ruff-0.16.10-hc57303c_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tk-8.6.13-hbeba79b_4.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tombi-1.7.3-hc2d82ec_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-arm64/tornado-6.5.10-py314hcd3153d_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zizmor-1.30.1-hc2d82ec_0.conda
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zstd-1.5.7-hf451053_7.conda
 packages:
@@ -444,6 +448,19 @@ packages:
   run_exports: {}
   size: 6993966
   timestamp: 1791308387095
+- conda: https://conda.anaconda.org/conda-forge/linux-64/tornado-6.5.10-py314h89acca1_0.conda
+  sha256: c205ceaa1536a8729bdad405ca711e94d2196aba30771029793557f250294598
+  md5: d2bd0918d9c10df4fe2355e33fe7bc63
+  depends:
+  - __glibc >=2.17,<3.0.a0
+  - libgcc >=15
+  - python >=3.14,<3.15.0a0
+  - python_abi 3.14.* *_cp314
+  license: Apache-2.0
+  license_family: Apache
+  run_exports: {}
+  size: 950218
+  timestamp: 1789911064461
 - conda: https://conda.anaconda.org/conda-forge/linux-64/zizmor-1.30.1-hf19af3b_0.conda
   sha256: 4da5306da8ce6e2d2bade86fab3e58fc31f5095ec3f6f34f7ea3f577d0663cd7
   md5: 98c2365b8cdad2354dd5b136a99d52a9
@@ -479,6 +496,17 @@ packages:
   run_exports: {}
   size: 131780
   timestamp: 1784754889428
+- conda: https://conda.anaconda.org/conda-forge/noarch/livereload-2.7.1-pyhd8ed1ab_0.conda
+  sha256: 6d31caafdbc1312cafd86f4ef9dfd90f7dfac8e8342b907be38837587f34723c
+  md5: 6b943581a68e8a7ca84660b692466b65
+  depends:
+  - python >=3.9
+  - tornado
+  license: BSD-3-Clause
+  license_family: BSD
+  run_exports: {}
+  size: 26050
+  timestamp: 1734603053324
 - conda: https://conda.anaconda.org/conda-forge/noarch/python_abi-3.14-9_cp314.conda
   build_number: 9
   sha256: e7f8e965bbfb98e08feb2365cacdad8bb218fa5b5a0a2752f747287f425f213c
@@ -731,6 +759,18 @@ packages:
   run_exports: {}
   size: 6364834
   timestamp: 1791308407854
+- conda: https://conda.anaconda.org/conda-forge/osx-arm64/tornado-6.5.10-py314hcd3153d_0.conda
+  sha256: b18706fdd0022f0467912956a24d2e28180ba37d14555be5e382bea51869a6ae
+  md5: 9079ddcc60b0cf5848f665fa0e7088f9
+  depends:
+  - __osx >=11.0
+  - python >=3.14,<3.15.0a0
+  - python_abi 3.14.* *_cp314
+  license: Apache-2.0
+  license_family: Apache
+  run_exports: {}
+  size: 952431
+  timestamp: 1789911042938
 - conda: https://conda.anaconda.org/conda-forge/osx-arm64/zizmor-1.30.1-hc2d82ec_0.conda
   sha256: a3a9a44fa449a3f4c9a6e72ff92e9be1800e2142976636332c87503e32b536cb
   md5: e3c2cc2bc14443246eb7e026c84e242c
