@@ -1,0 +1,54 @@
+name: Update the cartillas
+
+# Downloads the provider directories daily and, if they changed,
+# opens (or updates) a pull request with the new CSVs.
+
+on:
+  schedule:
+    - cron: "0 9 * * *" # 06:00 in Argentina
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      BRANCH: update-cartillas
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: prefix-dev/setup-pixi@9dabb60412d3d2d967a8d682f7ce01317af40514 # v0.11.0
+        with:
+          locked: true
+          environments: ci
+      - run: pixi run -e ci fetch
+      - name: Open a pull request if the cartillas changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- data/; then
+            echo "The cartillas are up to date."
+            exit 0
+          fi
+          git diff --stat -- data/
+          gh auth setup-git
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$BRANCH"
+          git add data/
+          git commit -m "Update the cartillas"
+          git push --force origin "$BRANCH"
+          if [ "$(gh pr list --head "$BRANCH" --state open --json number --jq length)" = 0 ]; then
+            gh pr create --head "$BRANCH" --title "Update the cartillas" \
+              --body "Downloaded by the scheduled \`update-data\` workflow."
+          fi
