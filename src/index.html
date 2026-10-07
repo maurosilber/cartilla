@@ -44,11 +44,22 @@
   button { cursor: pointer; }
   button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .row { display: flex; gap: 4px; }
-  #addr { width: 320px; }
-  /* Filters sit above the table they filter, as a grid of equal cells. */
-  #filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px 12px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  /* Filters sit above the table they filter, in groups (texto, ubicación, plan),
+     each a row of fields that wraps and stretches to fill the width. */
+  #filters { display: flex; flex-direction: column; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  #filters section { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+  #filters section > * { flex: 1 1 140px; min-width: 0; }
+  #filters section + section { border-top: 1px solid var(--line); padding-top: 10px; }
+  #filters section > h3 { flex-basis: 100%; margin: 0; font-size: 12px; font-weight: 600; }
+  #filters .wide { flex: 2 1 280px; }
   #filters input, #filters select { width: 100%; min-width: 0; height: 30px; }
-  #filters h2 { grid-column: 1 / -1; margin: 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); }
+  #filters .row input, #filters .row select { flex: 1; }
+  #filters .row button { height: 30px; padding-block: 0; }
+  /* A reset button next to each filter, faded while the filter is not set. */
+  #filters .reset { flex: none; width: 30px; padding: 0; color: var(--muted); }
+  #filters .reset:disabled { opacity: 0.35; cursor: default; }
+  input[type=search]::-webkit-search-cancel-button { display: none; }
+  #filters h2 { margin: 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); }
   #filters input[type=range] { padding: 0; border: 0; accent-color: var(--accent); }
   #toggle { display: none; }
   /* Shown over the map while no cartilla is chosen. */
@@ -77,15 +88,14 @@
     body, input, select, button { font-size: 16px; }
     body { display: block; height: auto; }
     header { padding: 10px 12px; gap: 8px; }
-    .grp { flex: 1 1 100%; }
-    .row { width: 100%; }
-    #addr { flex: 1; width: auto; min-width: 0; }
     input, select, button { padding: 8px 10px; }
     #toggle { display: block; }
-    #filters { display: none; grid-template-columns: minmax(0, 1fr); }
+    #filters { display: none; }
     #filters h2 { display: none; }
-    #side.open #filters { display: grid; }
-    #filters input, #filters select { height: auto; }
+    #side.open #filters { display: flex; }
+    #filters section > * { flex-basis: 100%; }
+    #filters input, #filters select, #filters .row button { height: auto; }
+    #filters .reset { width: 40px; }
     #main { grid-template-columns: minmax(0, 1fr); height: auto; }
     #map { height: 45vh; height: 45dvh; }
     #side { border-left: 0; }
@@ -113,15 +123,6 @@
       <label class="os os-unionpersonal"><input type="checkbox" value="unionpersonal">Unión Personal</label>
     </span>
   </h1>
-  <div class="grp">
-    <label>Ubicación (dirección, clic en el mapa o GPS)
-      <span class="row">
-        <input id="addr" type="search" enterkeyhint="search" autocomplete="street-address" placeholder="ej. Av. Santa Fe 2245">
-        <button id="go" class="primary">Buscar</button>
-        <button id="gps" title="Usar mi ubicación">📍</button>
-      </span>
-    </label>
-  </div>
 </header>
 <div id="main">
   <div id="notice" hidden>Elegí una cartilla (DOSUBA o Unión Personal) arriba para ver sus prestadores.</div>
@@ -129,22 +130,52 @@
   <div id="side">
     <div id="filters">
       <h2>Filtros</h2>
-      <label>Texto
-        <input id="q" type="search" placeholder="nombre, dirección…">
-      </label>
-      <label>Plan
-        <select id="plan"><option value="">Todos</option></select>
-      </label>
-      <label id="tipo-label">Tipo
-        <select id="tipo"><option value="">Todos</option></select>
-      </label>
-      <label>Especialidad
-        <input id="esp" type="search" list="esps" placeholder="Todas">
-        <datalist id="esps"></datalist>
-      </label>
-      <label><span>Distancia máx.: <span id="rv"></span></span>
-        <input id="radius" type="range" min="0" step="1">
-      </label>
+      <section role="group">
+        <h3>Texto</h3>
+        <span class="row">
+          <input id="q" type="search" aria-label="Texto" placeholder="nombre, dirección, especialidad, teléfono…">
+          <button class="reset" data-reset="q" title="Quitar este filtro" aria-label="Quitar este filtro">✕</button>
+        </span>
+      </section>
+      <section role="group">
+        <h3>Ubicación</h3>
+        <label class="wide">Dirección, clic en el mapa o GPS
+          <span class="row">
+            <input id="addr" type="search" enterkeyhint="search" autocomplete="street-address" placeholder="ej. Av. Santa Fe 2245">
+            <button id="go" class="primary">Buscar</button>
+            <button id="gps" title="Usar mi ubicación">📍</button>
+            <button class="reset" data-reset="addr" title="Quitar este filtro" aria-label="Quitar este filtro">✕</button>
+          </span>
+        </label>
+        <label><span>Distancia máx.: <span id="rv"></span></span>
+          <span class="row">
+            <input id="radius" type="range" min="0" step="1">
+            <button class="reset" data-reset="radius" title="Quitar este filtro" aria-label="Quitar este filtro">✕</button>
+          </span>
+        </label>
+      </section>
+      <section role="group">
+        <h3>Plan y especialidad</h3>
+        <label>Plan
+          <span class="row">
+            <select id="plan"><option value="">Todos</option></select>
+            <button class="reset" data-reset="plan" title="Quitar este filtro" aria-label="Quitar este filtro">✕</button>
+          </span>
+        </label>
+        <label id="tipo-label">Tipo
+          <span class="row">
+            <select id="tipo"><option value="">Todos</option></select>
+            <button class="reset" data-reset="tipo" title="Quitar este filtro" aria-label="Quitar este filtro">✕</button>
+          </span>
+        </label>
+        <label>Especialidad
+          <span class="row">
+            <input id="esp" type="search" list="esps" placeholder="Todas">
+            <button class="reset" data-reset="esp" title="Quitar este filtro" aria-label="Quitar este filtro">✕</button>
+          </span>
+          <datalist id="esps"></datalist>
+        </label>
+      </section>
     </div>
     <div id="statusbar">
       <span id="status"></span>
@@ -188,7 +219,8 @@ const MARKERS = Object.fromEntries(Object.entries(OS).map(([os, { check }]) =>
 const RADII = [0.1, 1, 10].flatMap((d) => [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8].map((m) => +(d * m).toFixed(2)))
   .filter((km) => km <= 50);
 $("radius").max = RADII.length - 1;
-$("radius").value = RADII.indexOf(5);
+const RADIUS_DEFAULT = RADII.indexOf(5);
+$("radius").value = RADIUS_DEFAULT;
 const radiusKm = () => RADII[+$("radius").value];
 let shown = [], rows = [], plans = {}, selected = null, filtered = [];
 
@@ -208,7 +240,8 @@ function cartilla(os) {
       r.os = os;
       r.esps = r.especialidades.split(",").map((s) => s.trim()).filter(Boolean);
       r.espKeys = r.esps.map(norm);
-      r.text = norm([r.nombre, r.direccion, r.localidad, r.tipo, r.especialidades].join(" "));
+      r.text = norm([OS[os].name, r.nombre, r.direccion, r.localidad, r.tipo, r.especialidades,
+        r.telefonos, r.horario, ...r.plans].join(" "));
       r.maps_url ||= "https://www.google.com/maps/search/?api=1&query=" +
         encodeURIComponent(`${r.direccion.split(" - ")[0]}, ${r.localidad}`);
       if (r.lat != null) {
@@ -320,6 +353,13 @@ function setOrigin(lat, lon, label) {
   originMarker = L.marker([lat, lon]).addTo(map).bindTooltip(label || "Ubicación elegida");
   update(true);
 }
+function clearOrigin() {
+  origin = null;
+  originMarker?.remove();
+  originMarker = null;
+  $("addr").value = "";
+  update();
+}
 map.on("click", (e) => setOrigin(e.latlng.lat, e.latlng.lng));
 
 // Address search: USIG normalizer (GCBA), falling back to Nominatim (OSM)
@@ -363,9 +403,10 @@ function haversine(a, b) {
 const fmt = (km) => (km < 1 ? `${Math.round(km * 1000)} m` : `${+km.toFixed(1)} km`);
 
 function update(fit = false) {
+  syncResets();
   const radius = radiusKm();
   $("rv").textContent = fmt(radius);
-  const [planOs, plan] = $("plan").value.split("|"), tipo = $("tipo").value, esp = norm($("esp").value).split(/[^a-z0-9]+/).filter(Boolean), q = norm($("q").value.trim());
+  const [planOs, plan] = $("plan").value.split("|"), tipo = $("tipo").value, esp = norm($("esp").value).split(/[^a-z0-9]+/).filter(Boolean), q = norm($("q").value).split(/\s+/).filter(Boolean);
 
   // Matched once per distinct specialty, not once per provider.
   const espHit = new Map(), espOk = (k) => {
@@ -377,7 +418,7 @@ function update(fit = false) {
     (!plan || (r.os === planOs && r.plans.includes(plan))) &&
     (!tipo || r.tipo === tipo) &&
     (!esp.length || r.espKeys.some(espOk)) &&
-    (!q || r.text.includes(q)) &&
+    q.every((w) => r.text.includes(w)) &&
     (!origin || (r.dist != null && r.dist <= radius)));
 
   if (circle) circle.remove();
@@ -458,6 +499,21 @@ $("radius").oninput = () => update();
 $("radius").onchange = () => update(true);
 $("tipo").oninput = () => { fillEsps(); update(); };
 for (const id of ["plan", "esp", "q"]) $(id).oninput = () => update();
+
+// Reset buttons, one per filter, enabled while their filter is set.
+const RESETS = {
+  q: { set: () => !!$("q").value, reset: () => { $("q").value = ""; update(); } },
+  addr: { set: () => !!(origin || $("addr").value), reset: clearOrigin },
+  radius: { set: () => +$("radius").value !== RADIUS_DEFAULT, reset: () => { $("radius").value = RADIUS_DEFAULT; update(!!origin); } },
+  plan: { set: () => !!$("plan").value, reset: () => { $("plan").value = ""; update(); } },
+  tipo: { set: () => !!$("tipo").value, reset: () => { $("tipo").value = ""; fillEsps(); update(); } },
+  esp: { set: () => !!$("esp").value, reset: () => { $("esp").value = ""; update(); } },
+};
+function syncResets() {
+  document.querySelectorAll("#filters .reset").forEach((b) => (b.disabled = !RESETS[b.dataset.reset].set()));
+}
+document.querySelectorAll("#filters .reset").forEach((b) => (b.onclick = RESETS[b.dataset.reset].reset));
+$("addr").addEventListener("input", syncResets);
 
 // The obra sociales shown are kept in the URL (#dosuba,unionpersonal), so links keep them.
 // None is chosen at first, so that only the cartillas the user asks for are downloaded.
