@@ -4,7 +4,7 @@ The site's search form validates filters only client-side; the backend
 endpoint accepts an empty query and returns every provider, paginated
 10 per page as an HTML fragment.
 
-Usage: python3 fetch_cartilla.py [output.csv]
+Usage: python3 fetch_dosuba.py [output.csv]
 """
 
 import csv

@@ -13,27 +13,43 @@ dependencies = {
 }
 
 [feature.site.tasks]
-# Downloads the provider directory again (~1 min), into data/.
-# Not a dependency of `build`, so the site is built from the committed data.
-fetch = "python src/fetch_cartilla.py data/cartilla.csv"
-# Geocodes the providers for the map. Only new addresses reach the network:
-# the rest come from the cache in data/, which is committed.
-geocode = {
-  cmd = "python src/geocode_cartilla.py data/cartilla.csv data/geocode_cache.json dist/cartilla.js",
+# Download the provider directories again, into data/.
+# Not dependencies of `build`, so the site is built from the committed data.
+# ~1 min
+fetch-dosuba = "python src/fetch_dosuba.py data/dosuba/cartilla.csv"
+# ~10 min
+fetch-unionpersonal = "python src/fetch_unionpersonal.py data/unionpersonal/cartilla.csv"
+fetch = { depends-on = ["fetch-dosuba", "fetch-unionpersonal"] }
+# Geocode the providers for the map. Only new addresses reach the network:
+# the rest come from the caches in data/, which are committed.
+geocode-dosuba = {
+  cmd = "python src/geocode_cartilla.py data/dosuba/cartilla.csv data/dosuba/geocode_cache.json dist/dosuba.json",
   inputs = [
     "src/geocode_cartilla.py",
-    "data/cartilla.csv",
-    "data/geocode_cache.json",
+    "data/dosuba/cartilla.csv",
+    "data/dosuba/geocode_cache.json",
   ],
   outputs = [
-    "dist/cartilla.js",
+    "dist/dosuba.json",
+  ]
+}
+geocode-unionpersonal = {
+  cmd = "python src/geocode_cartilla.py data/unionpersonal/cartilla.csv data/unionpersonal/geocode_cache.json dist/unionpersonal.json",
+  inputs = [
+    "src/geocode_cartilla.py",
+    "data/unionpersonal/cartilla.csv",
+    "data/unionpersonal/geocode_cache.json",
+  ],
+  outputs = [
+    "dist/unionpersonal.json",
   ]
 }
 # What is published to GitHub Pages.
 build = {
   cmd = "cp src/index.html dist",
   depends-on = [
-    "geocode",
+    "geocode-dosuba",
+    "geocode-unionpersonal",
   ]
 }
 serve = { cmd = "python -m http.server --directory dist 8000", depends-on = ["build"] }

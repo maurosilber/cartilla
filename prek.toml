@@ -3,7 +3,8 @@ default_install_hook_types = ["pre-commit"]
 [[repos]]
 repo = "builtin"
 hooks = [
-  { id = "check-added-large-files", args = ["--maxkb=1024"] },
+  # The Unión Personal CSV is ~1.8 MB.
+  { id = "check-added-large-files", args = ["--maxkb=4096"] },
   { id = "check-case-conflict" },
   { id = "check-illegal-windows-names" },
   { id = "check-json" },
@@ -16,8 +17,8 @@ hooks = [
   { id = "detect-private-key" },
   { id = "end-of-file-fixer" },
   { id = "fix-byte-order-marker" },
-  # The CSV is written with CRLF line endings by Python's csv module.
-  { id = "mixed-line-ending", args = ["--fix=lf"], exclude.glob = "data/cartilla.csv" },
+  # The DOSUBA CSV is written with CRLF line endings by Python's csv module.
+  { id = "mixed-line-ending", args = ["--fix=lf"], exclude.glob = "data/dosuba/cartilla.csv" },
 ]
 
 [[repos]]

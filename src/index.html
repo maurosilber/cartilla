@@ -3,20 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Cartilla DOSUBA</title>
+<title>Cartillas DOSUBA y Unión Personal</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="cartilla.js"></script>
 <style>
-  :root { --bg: #fff; --fg: #1d1d1f; --muted: #6b6b70; --line: #e3e3e6; --accent: #1a7f5a; --hl: #eef7f2; }
+  /* Each obra social has its own accent; --marker is the map dot, for both themes. */
+  :root { --bg: #fff; --fg: #1d1d1f; --muted: #6b6b70; --line: #e3e3e6; --accent: #1a7f5a; --hl: #eef7f2; --marker: #1a7f5a; }
+  :root[data-os="unionpersonal"] { --accent: #2b4a9c; --hl: #eef2fa; --marker: #2b4a9c; }
   @media (prefers-color-scheme: dark) {
     :root { --bg: #17181a; --fg: #ececee; --muted: #9a9aa0; --line: #2c2d30; --accent: #4cc58f; --hl: #1d2a24; }
+    :root[data-os="unionpersonal"] { --accent: #7ea2ff; --hl: #1d2433; }
   }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   /* Header on top, map and table filling the rest of the viewport. */
   body { margin: 0; font: 14px/1.4 system-ui, sans-serif; background: var(--bg); color: var(--fg); display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
   header { padding: 10px 16px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; }
-  header h1 { font-size: 18px; margin: 0; }
+  header h1 { font-size: 18px; margin: 0; display: flex; align-items: center; gap: 8px; }
+  header h1 select { font-size: 18px; font-weight: 600; color: var(--accent); border-color: var(--accent); }
   label { display: flex; flex-direction: column; font-size: 12px; color: var(--muted); gap: 2px; }
   input, select, button { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
   button { cursor: pointer; }
@@ -82,11 +86,16 @@
 </head>
 <body>
 <header>
-  <h1>Cartilla DOSUBA</h1>
+  <h1>Cartilla
+    <select id="os" aria-label="Obra social">
+      <option value="dosuba">DOSUBA</option>
+      <option value="unionpersonal">Unión Personal</option>
+    </select>
+  </h1>
   <div class="grp">
     <label>Ubicación (dirección, clic en el mapa o GPS)
       <span class="row">
-        <input id="addr" type="search" enterkeyhint="search" autocomplete="street-address" placeholder="ej. Córdoba 3933">
+        <input id="addr" type="search" enterkeyhint="search" autocomplete="street-address" placeholder="ej. Av. Santa Fe 2245">
         <button id="go" class="primary">Buscar</button>
         <button id="gps" title="Usar mi ubicación">📍</button>
       </span>
@@ -103,6 +112,9 @@
       </label>
       <label>Plan
         <select id="plan"><option value="">Todos</option></select>
+      </label>
+      <label id="tipo-label">Tipo
+        <select id="tipo"><option value="">Todos</option></select>
       </label>
       <label>Especialidad
         <select id="esp"><option value="">Todas</option></select>
@@ -123,7 +135,7 @@
           <th data-k="nombre">Nombre</th>
           <th data-k="direccion">Dirección</th>
           <th data-k="especialidades">Especialidades</th>
-          <th data-k="telefonos">Teléfonos</th>
+          <th data-k="telefonos">Teléfonos y horario</th>
           <th data-k="plan">Plan</th>
         </tr></thead>
         <tbody id="tb"></tbody>
@@ -136,26 +148,6 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const norm = (s) => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
-// The source lists a provider once per plan; merge rows that differ only in plan.
-const merged = new Map();
-for (const { plan, ...r } of CARTILLA) {
-  const key = JSON.stringify(r);
-  if (!merged.has(key)) merged.set(key, { ...r, plans: [] });
-  merged.get(key).plans.push(plan);
-}
-const rows = [...merged.values()].map((r, i) => ({
-  ...r, i,
-  plan: r.plans.join(", "),
-  esps: r.especialidades.split(",").map((s) => s.trim()).filter(Boolean),
-  text: norm([r.nombre, r.direccion, r.localidad, r.especialidades].join(" ")),
-}));
-const badges = (r) => r.plans.map((p) => `<span class="badge">${esc(p)}</span>`).join(" ");
-
-// Filter options
-for (const p of [...new Set(rows.flatMap((r) => r.plans))].sort()) $("plan").add(new Option(p, p));
-for (const e of [...new Set(rows.flatMap((r) => r.esps))].sort((a, b) => a.localeCompare(b, "es")))
-  $("esp").add(new Option(e, e));
-
 // Map
 const map = L.map("map").setView([-34.6037, -58.4416], 12);
 L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -163,18 +155,76 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> · Geocodificación: <a href="https://usig.buenosaires.gob.ar/">USIG GCBA</a>',
 }).addTo(map);
 const layer = L.layerGroup().addTo(map);
-const MARKER = { radius: 6, weight: 1, color: "#fff", fillColor: "#1a7f5a", fillOpacity: 0.85 };
 const MARKER_SEL = { radius: 10, weight: 3, color: "#fff", fillColor: "#e8590c", fillOpacity: 1 };
-let selected = null, filtered = [];
-for (const r of rows) {
-  if (r.lat == null) continue;
-  r.marker = L.circleMarker([r.lat, r.lon], MARKER)
-    .bindPopup(() => popup(r));
-  r.marker.on("click", () => highlight(r));
+let MARKER;
+let rows = [], plans = [], selected = null, filtered = [];
+
+const uniq = (xs) => [...new Set(xs)].sort((a, b) => a.localeCompare(b, "es"));
+const badges = (r) => (r.plans.length === plans.length && plans.length > 1 ? ["Todos los planes"] : r.plans)
+  .map((p) => `<span class="badge">${esc(p)}</span>`).join(" ");
+
+// Loads an obra social's cartilla (dosuba.json, unionpersonal.json) and rebuilds
+// the filters and markers, keeping the chosen location.
+let loading = null;
+async function load(os) {
+  loading = os;
+  $("status").textContent = "Cargando cartilla…";
+  const data = await (await fetch(`${os}.json`)).json();
+  if (loading !== os) return; // another obra social was chosen meanwhile
+
+  document.documentElement.dataset.os = os;
+  const marker = getComputedStyle(document.documentElement).getPropertyValue("--marker").trim();
+  MARKER = { radius: 6, weight: 1, color: "#fff", fillColor: marker, fillOpacity: 0.85 };
+
+  // The source lists a provider once per plan; merge rows that differ only in plan.
+  const merged = new Map();
+  for (const { plan, ...r } of data) {
+    const key = JSON.stringify(r);
+    if (!merged.has(key)) merged.set(key, { ...r, plans: [] });
+    merged.get(key).plans.push(plan);
+  }
+  rows = [...merged.values()].map((r, i) => ({
+    ...r, i,
+    plan: r.plans.join(", "),
+    esps: r.especialidades.split(",").map((s) => s.trim()).filter(Boolean),
+    text: norm([r.nombre, r.direccion, r.localidad, r.tipo, r.especialidades].join(" ")),
+    maps_url: r.maps_url || "https://www.google.com/maps/search/?api=1&query=" +
+      encodeURIComponent(`${r.direccion.split(" - ")[0]}, ${r.localidad}`),
+  }));
+  for (const r of rows) {
+    if (r.lat == null) continue;
+    r.marker = L.circleMarker([r.lat, r.lon], MARKER).bindPopup(() => popup(r));
+    r.marker.on("click", () => highlight(r));
+  }
+  selected = null;
+
+  // Filter options
+  plans = uniq(rows.flatMap((r) => r.plans));
+  $("plan").length = 1;
+  for (const p of plans) $("plan").add(new Option(p, p));
+  const tipos = uniq(rows.map((r) => r.tipo).filter(Boolean));
+  $("tipo").length = 1;
+  for (const t of tipos) $("tipo").add(new Option(t, t));
+  $("tipo-label").hidden = !tipos.length;
+  fillEsps();
+
+  update(!!origin);
+  if (!origin) showAll();
 }
+
+// Specialties offered by the chosen tipo, keeping the current choice if it still applies.
+function fillEsps() {
+  const tipo = $("tipo").value, cur = $("esp").value;
+  const esps = uniq(rows.filter((r) => !tipo || r.tipo === tipo).flatMap((r) => r.esps));
+  $("esp").length = 1;
+  for (const e of esps) $("esp").add(new Option(e, e));
+  $("esp").value = esps.includes(cur) ? cur : "";
+}
+
 function popup(r) {
   return `<b>${esc(r.nombre)}</b><br>${esc(r.direccion)}, ${esc(r.localidad)}<br>
-    <span class="small">${esc(r.especialidades)}</span><br>${esc(r.telefonos)}<br>${badges(r)}<br>
+    <span class="small">${r.tipo ? `${esc(r.tipo)} · ` : ""}${esc(r.esps.join(", "))}</span><br>${esc(r.telefonos)}<br>
+    ${r.horario ? `<span class="small">${esc(r.horario)}</span><br>` : ""}${badges(r)}<br>
     ${r.dist != null ? `<b>${fmt(r.dist)}</b> · ` : ""}<a href="${esc(r.maps_url)}" target="_blank" rel="noopener">Google Maps</a>`;
 }
 
@@ -232,17 +282,18 @@ const fmt = (km) => (km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} k
 function update(fit = false) {
   const radius = +$("radius").value;
   $("rv").textContent = `${radius} km`;
-  const plan = $("plan").value, esp = $("esp").value, q = norm($("q").value.trim());
+  const plan = $("plan").value, tipo = $("tipo").value, esp = $("esp").value, q = norm($("q").value.trim());
 
   for (const r of rows) r.dist = origin && r.lat != null ? haversine(origin, r) : null;
   filtered = rows.filter((r) =>
     (!plan || r.plans.includes(plan)) &&
+    (!tipo || r.tipo === tipo) &&
     (!esp || r.esps.includes(esp)) &&
     (!q || r.text.includes(q)) &&
     (!origin || (r.dist != null && r.dist <= radius)));
 
   if (circle) circle.remove();
-  circle = origin ? L.circle([origin.lat, origin.lon], { radius: radius * 1000, color: "#1a7f5a", weight: 1, fillOpacity: 0.06, interactive: false }).addTo(map) : null;
+  circle = origin ? L.circle([origin.lat, origin.lon], { radius: radius * 1000, color: MARKER.fillColor, weight: 1, fillOpacity: 0.06, interactive: false }).addTo(map) : null;
 
   layer.clearLayers();
   for (const r of filtered) if (r.marker) layer.addLayer(r.marker);
@@ -272,8 +323,8 @@ function renderTable() {
     <td class="dist${r.dist != null ? "" : " none"}">${r.dist != null ? fmt(r.dist) : "–"}</td>
     <td class="nombre">${esc(r.nombre)}</td>
     <td class="direccion">${esc(r.direccion)}<br><span class="small">${esc(r.localidad)}</span></td>
-    <td class="small esp">${esc(r.esps.join(", "))}</td>
-    <td class="small tel">${esc(r.telefonos)}</td>
+    <td class="small esp">${esc(r.esps.join(", "))}${r.tipo ? `<br><i>${esc(r.tipo)}</i>` : ""}</td>
+    <td class="small tel">${esc(r.telefonos)}${r.horario ? `<br>${esc(r.horario)}` : ""}</td>
     <td class="plan">${badges(r)}</td></tr>`).join("");
   if (selected) document.querySelector(`tr[data-i="${selected.i}"]`)?.classList.add("sel");
   document.querySelectorAll("th").forEach((th) =>
@@ -312,10 +363,19 @@ $("toggle").onclick = () => {
 };
 $("radius").oninput = () => update();
 $("radius").onchange = () => update(true);
+$("tipo").oninput = () => { fillEsps(); update(); };
 for (const id of ["plan", "esp", "q"]) $(id).oninput = () => update();
 
-update();
-showAll();
+// The obra social is kept in the URL (#dosuba, #unionpersonal), so links keep it.
+const OS = [...$("os").options].map((o) => o.value);
+function fromHash() {
+  const os = location.hash.slice(1);
+  $("os").value = OS.includes(os) ? os : OS[0];
+  load($("os").value);
+}
+$("os").onchange = () => (location.hash = $("os").value);
+window.onhashchange = fromHash;
+fromHash();
 </script>
 </body>
 </html>
