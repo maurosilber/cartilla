@@ -42,6 +42,13 @@ ABBREV = {
     "sta": "santa",
     "tte": "teniente",
 }
+# The many spellings of WhatsApp next to phone numbers (whattsap, WHATSAAP, WA, WPP, ...),
+# written as "WhatsApp" for index.html to show as an icon.
+# Not \b, as some are glued to the number ("15-5922-9731wattsapp").
+WHATSAPP = re.compile(
+    r"(?<![a-z])(?:wh?a+t+s+a+p+|wa|wat|wath|wh|wha|whap|what|wht|whts|wp|wpp|ws|wsp)(?![a-z])",
+    re.IGNORECASE,
+)
 
 
 def norm(s):
@@ -191,6 +198,13 @@ def main(csv_path, cache_path, out):
         ok = key not in bad and has_number(key.split("|")[0])
         lat, lon, _ = (ok and cache[key]) or (None, None, None)
         row.update(lat=lat, lon=lon)
+
+    for row in rows:
+        for k in ("telefonos", "horario"):
+            if row.get(k):
+                row[k] = re.sub(
+                    r"(?<=\d)WhatsApp", " WhatsApp", WHATSAPP.sub("WhatsApp", row[k])
+                )
 
     # The source lists a provider once per plan; merge rows that differ only in plan.
     merged = {}
