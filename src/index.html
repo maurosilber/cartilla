@@ -69,7 +69,6 @@
   #side { display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--line); }
   #statusbar { display: flex; gap: 8px; align-items: center; padding: 6px 12px; border-bottom: 1px solid var(--line); }
   #status { flex: 1; color: var(--muted); }
-  #all { white-space: nowrap; }
   #tablewrap { overflow: auto; flex: 1; }
   table { border-collapse: collapse; width: 100%; }
   th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
@@ -180,7 +179,6 @@
     <div id="statusbar">
       <span id="status"></span>
       <button id="toggle" class="primary" aria-expanded="false" aria-controls="filters">Filtros</button>
-      <button id="all" title="Ajustar el mapa para ver todos los prestadores filtrados">Ver todos</button>
     </div>
     <div id="tablewrap">
       <table>
@@ -449,9 +447,8 @@ function renderTable() {
     return;
   }
   const noGeo = filtered.filter((r) => !r.marker).length;
-  $("status").textContent = `${out.length} de ${filtered.length} prestadores visibles en el mapa` +
-    (origin ? ` a menos de ${fmt(radiusKm())}` : " · elegí una ubicación para filtrar por distancia") +
-    (noGeo ? ` · ${noGeo} sin coordenadas` : "");
+  $("status").textContent = `${out.length} de ${filtered.length} en el mapa` +
+    (origin ? ` · hasta ${fmt(radiusKm())}` : "") + (noGeo ? ` · ${noGeo} sin ubicar` : "");
 
   $("tb").innerHTML = out.map((r) => `<tr data-i="${r.i}">
     <td class="dist${r.dist != null ? "" : " none"}">${r.dist != null ? fmt(r.dist) : "–"}</td>
@@ -469,7 +466,6 @@ function showAll() {
   const pts = filtered.filter((r) => r.marker).map((r) => r.marker.getLatLng());
   if (pts.length) map.fitBounds(L.latLngBounds(pts), { padding: [20, 20], maxZoom: 16 });
 }
-$("all").onclick = showAll;
 map.on("moveend", renderTable);
 
 // Marks the provider in the table and on the map, without moving the map.
