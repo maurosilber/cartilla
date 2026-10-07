@@ -51,7 +51,9 @@
   #filters h2 { grid-column: 1 / -1; margin: 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); }
   #filters input[type=range] { padding: 0; border: 0; accent-color: var(--accent); }
   #toggle { display: none; }
-  #main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); flex: 1; min-height: 0; }
+  /* Shown over the map while no cartilla is chosen. */
+  #notice { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 1000; width: max-content; max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 8px; background: var(--bg); color: var(--fg); border: 1px solid var(--line); box-shadow: 0 2px 10px rgb(0 0 0 / 0.2); font-weight: 600; text-align: center; }
+  #main { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); flex: 1; min-height: 0; }
   #map { height: 100%; }
   #side { display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--line); }
   #statusbar { display: flex; gap: 8px; align-items: center; padding: 6px 12px; border-bottom: 1px solid var(--line); }
@@ -122,6 +124,7 @@
   </div>
 </header>
 <div id="main">
+  <div id="notice" hidden>Elegí una cartilla (DOSUBA o Unión Personal) arriba para ver sus prestadores.</div>
   <div id="map"></div>
   <div id="side">
     <div id="filters">
@@ -139,7 +142,7 @@
         <select id="esp"><option value="">Todas</option></select>
       </label>
       <label><span>Distancia máx.: <span id="rv"></span></span>
-        <input id="radius" type="range" min="0.5" max="50" step="0.5" value="5">
+        <input id="radius" type="range" min="0" step="1">
       </label>
     </div>
     <div id="statusbar">
@@ -180,6 +183,12 @@ const OS = Object.fromEntries([...document.querySelectorAll("#os input")]
   .map((c) => [c.value, { name: c.parentElement.textContent.trim(), check: c }]));
 const MARKERS = Object.fromEntries(Object.entries(OS).map(([os, { check }]) =>
   [os, { radius: 6, weight: 1, color: "#fff", fillColor: css("--c-marker", check.parentElement), fillOpacity: 0.85 }]));
+// Distance steps for the radius slider, evenly spaced on a log scale (finer at short distances).
+const RADII = [0.1, 1, 10].flatMap((d) => [1, 1.2, 1.5, 2, 2.5, 3, 4, 5, 6, 8].map((m) => +(d * m).toFixed(2)))
+  .filter((km) => km <= 50);
+$("radius").max = RADII.length - 1;
+$("radius").value = RADII.indexOf(5);
+const radiusKm = () => RADII[+$("radius").value];
 let shown = [], rows = [], plans = {}, selected = null, filtered = [];
 
 const uniq = (xs) => [...new Set(xs)].sort((a, b) => a.localeCompare(b, "es"));
@@ -219,7 +228,8 @@ async function load(oss) {
   if (loading !== oss.join()) return; // another choice was made meanwhile
 
   shown = oss;
-  document.documentElement.dataset.os = oss.length > 1 ? "both" : oss[0];
+  document.documentElement.dataset.os = oss.length === 1 ? oss[0] : "both";
+  $("notice").hidden = oss.length > 0;
   // Larger cartillas first, so their dots don't cover the smaller ones.
   rows = [...data].sort((a, b) => b.length - a.length).flat();
   rows.forEach((r, i) => {
@@ -331,11 +341,11 @@ function haversine(a, b) {
   const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLon / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(h));
 }
-const fmt = (km) => (km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`);
+const fmt = (km) => (km < 1 ? `${Math.round(km * 1000)} m` : `${+km.toFixed(1)} km`);
 
 function update(fit = false) {
-  const radius = +$("radius").value;
-  $("rv").textContent = `${radius} km`;
+  const radius = radiusKm();
+  $("rv").textContent = fmt(radius);
   const [planOs, plan] = $("plan").value.split("|"), tipo = $("tipo").value, esp = $("esp").value, q = norm($("q").value.trim());
 
   for (const r of rows) r.dist = origin && r.lat != null ? haversine(origin, r) : null;
@@ -368,9 +378,14 @@ function renderTable() {
     return (typeof x === "number" ? x - y : String(x).localeCompare(String(y), "es")) * sortDir;
   });
 
+  if (!shown.length) {
+    $("status").textContent = "Elegí una cartilla para ver sus prestadores.";
+    $("tb").innerHTML = "";
+    return;
+  }
   const noGeo = filtered.filter((r) => !r.marker).length;
   $("status").textContent = `${out.length} de ${filtered.length} prestadores visibles en el mapa` +
-    (origin ? ` a menos de ${+$("radius").value} km` : " · elegí una ubicación para filtrar por distancia") +
+    (origin ? ` a menos de ${fmt(radiusKm())}` : " · elegí una ubicación para filtrar por distancia") +
     (noGeo ? ` · ${noGeo} sin coordenadas` : "");
 
   $("tb").innerHTML = out.map((r) => `<tr data-i="${r.i}">
@@ -421,16 +436,14 @@ $("tipo").oninput = () => { fillEsps(); update(); };
 for (const id of ["plan", "esp", "q"]) $(id).oninput = () => update();
 
 // The obra sociales shown are kept in the URL (#dosuba,unionpersonal), so links keep them.
+// None is chosen at first, so that only the cartillas the user asks for are downloaded.
 function fromHash() {
   const oss = location.hash.slice(1).split(",").filter((os) => os in OS);
-  if (!oss.length) oss.push(Object.keys(OS)[0]);
   for (const [os, { check }] of Object.entries(OS)) check.checked = oss.includes(os);
   load(oss);
 }
 for (const { check } of Object.values(OS)) check.onchange = () => {
-  const oss = Object.keys(OS).filter((os) => OS[os].check.checked);
-  if (!oss.length) return (check.checked = true); // keep at least one
-  location.hash = oss.join(",");
+  location.hash = Object.keys(OS).filter((os) => OS[os].check.checked).join(",");
 };
 window.onhashchange = fromHash;
 fromHash();
