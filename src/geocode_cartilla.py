@@ -189,10 +189,18 @@ def main(csv_path, cache_path, out):
         print(f"  outlier: {k} -> {cache[k]}", file=sys.stderr)
     for row, key in zip(rows, keys):
         ok = key not in bad and has_number(key.split("|")[0])
-        lat, lon, src = (ok and cache[key]) or (None, None, None)
-        row.update(lat=lat, lon=lon, geo=src)
+        lat, lon, _ = (ok and cache[key]) or (None, None, None)
+        row.update(lat=lat, lon=lon)
 
-    data = json.dumps(rows, ensure_ascii=False)
+    # The source lists a provider once per plan; merge rows that differ only in plan.
+    merged = {}
+    for row in rows:
+        plan = row.pop("plan")
+        r = merged.setdefault(tuple(row.values()), {**row, "plans": []})
+        r["plans"].append(plan)
+    rows = list(merged.values())
+
+    data = json.dumps(rows, ensure_ascii=False, separators=(",", ":"))
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(data + "\n", encoding="utf-8")
     missing = [r for r in rows if r["lat"] is None]

@@ -193,15 +193,9 @@ const badges = (r) => [
 // Rows of one obra social's cartilla (dosuba.json, unionpersonal.json), fetched once.
 const cartillas = {};
 function cartilla(os) {
-  cartillas[os] ??= fetch(`${os}.json`).then((r) => r.json()).then((data) => {
-    // The source lists a provider once per plan; merge rows that differ only in plan.
-    const merged = new Map();
-    for (const { plan, ...r } of data) {
-      const key = JSON.stringify(r);
-      if (!merged.has(key)) merged.set(key, { ...r, os, plans: [] });
-      merged.get(key).plans.push(plan);
-    }
-    return [...merged.values()].map((r) => {
+  cartillas[os] ??= fetch(`${os}.json`).then((r) => r.json()).then((data) =>
+    data.map((r) => {
+      r.os = os;
       r.esps = r.especialidades.split(",").map((s) => s.trim()).filter(Boolean);
       r.espKeys = r.esps.map(norm);
       r.text = norm([r.nombre, r.direccion, r.localidad, r.tipo, r.especialidades].join(" "));
@@ -212,8 +206,7 @@ function cartilla(os) {
         r.marker.on("click", () => highlight(r));
       }
       return r;
-    });
-  });
+    }));
   return cartillas[os];
 }
 
