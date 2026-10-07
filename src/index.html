@@ -7,20 +7,38 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
-  /* Each obra social has its own accent; --marker is the map dot, for both themes. */
-  :root { --bg: #fff; --fg: #1d1d1f; --muted: #6b6b70; --line: #e3e3e6; --accent: #1a7f5a; --hl: #eef7f2; --marker: #1a7f5a; }
-  :root[data-os="unionpersonal"] { --accent: #2b4a9c; --hl: #eef2fa; --marker: #2b4a9c; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg: #17181a; --fg: #ececee; --muted: #9a9aa0; --line: #2c2d30; --accent: #4cc58f; --hl: #1d2a24; }
-    :root[data-os="unionpersonal"] { --accent: #7ea2ff; --hl: #1d2433; }
+  /* Each obra social has its own color (--<os>: text and borders, --<os>-hl: fills,
+     --<os>-marker: map dots); the page takes it as accent while it is the only one shown. */
+  :root {
+    --bg: #fff; --fg: #1d1d1f; --muted: #6b6b70; --line: #e3e3e6;
+    --dosuba: #1a7f5a; --dosuba-hl: #eef7f2; --dosuba-marker: #1a7f5a;
+    --unionpersonal: #2b4a9c; --unionpersonal-hl: #eef2fa; --unionpersonal-marker: #2b4a9c;
+    --both: #4a5568; --both-hl: #f0f2f5;
   }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #17181a; --fg: #ececee; --muted: #9a9aa0; --line: #2c2d30;
+      --dosuba: #4cc58f; --dosuba-hl: #1d2a24;
+      --unionpersonal: #7ea2ff; --unionpersonal-hl: #1d2433;
+      --both: #8f9bb0; --both-hl: #23262b;
+    }
+  }
+  :root, :root[data-os="dosuba"] { --accent: var(--dosuba); --hl: var(--dosuba-hl); }
+  :root[data-os="unionpersonal"] { --accent: var(--unionpersonal); --hl: var(--unionpersonal-hl); }
+  :root[data-os="both"] { --accent: var(--both); --hl: var(--both-hl); }
+  .os-dosuba { --c: var(--dosuba); --c-hl: var(--dosuba-hl); --c-marker: var(--dosuba-marker); }
+  .os-unionpersonal { --c: var(--unionpersonal); --c-hl: var(--unionpersonal-hl); --c-marker: var(--unionpersonal-marker); }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
   /* Header on top, map and table filling the rest of the viewport. */
   body { margin: 0; font: 14px/1.4 system-ui, sans-serif; background: var(--bg); color: var(--fg); display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
   header { padding: 10px 16px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; }
-  header h1 { font-size: 18px; margin: 0; display: flex; align-items: center; gap: 8px; }
-  header h1 select { font-size: 18px; font-weight: 600; color: var(--accent); border-color: var(--accent); }
+  header h1 { font-size: 18px; margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  /* Obra social toggles: a pill per cartilla, with the color of its map dots. */
+  #os { display: flex; flex-wrap: wrap; gap: 6px; }
+  label.os { flex-direction: row; align-items: center; gap: 6px; font-size: 15px; font-weight: 600; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px 3px 8px; cursor: pointer; user-select: none; }
+  label.os input { accent-color: var(--c-marker); margin: 0; }
+  label.os:has(input:checked) { color: var(--c); border-color: var(--c); background: var(--c-hl); }
   label { display: flex; flex-direction: column; font-size: 12px; color: var(--muted); gap: 2px; }
   input, select, button { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
   button { cursor: pointer; }
@@ -49,7 +67,8 @@
   tbody tr:hover, tbody tr.sel { background: var(--hl); }
   td.dist { white-space: nowrap; text-align: right; }
   .small { font-size: 12px; color: var(--muted); }
-  .badge { display: inline-block; font-size: 11px; line-height: 1.5; padding: 0 7px; margin: 0 2px 2px 0; border-radius: 999px; background: var(--hl); color: var(--accent); border: 1px solid var(--accent); white-space: nowrap; }
+  .badge { display: inline-block; font-size: 11px; line-height: 1.5; padding: 0 7px; margin: 0 2px 2px 0; border-radius: 999px; background: var(--c-hl); color: var(--c); border: 1px solid var(--c); white-space: nowrap; }
+  .badge.name { font-weight: 600; }
   .leaflet-popup-content { font-size: 13px; }
   @media (max-width: 800px) {
     /* 16px keeps iOS from zooming in when an input gets focus. */
@@ -87,10 +106,10 @@
 <body>
 <header>
   <h1>Cartilla
-    <select id="os" aria-label="Obra social">
-      <option value="dosuba">DOSUBA</option>
-      <option value="unionpersonal">Unión Personal</option>
-    </select>
+    <span id="os" role="group" aria-label="Obra social">
+      <label class="os os-dosuba"><input type="checkbox" value="dosuba">DOSUBA</label>
+      <label class="os os-unionpersonal"><input type="checkbox" value="unionpersonal">Unión Personal</label>
+    </span>
   </h1>
   <div class="grp">
     <label>Ubicación (dirección, clic en el mapa o GPS)
@@ -156,55 +175,88 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 }).addTo(map);
 const layer = L.layerGroup().addTo(map);
 const MARKER_SEL = { radius: 10, weight: 3, color: "#fff", fillColor: "#e8590c", fillOpacity: 1 };
-let MARKER;
-let rows = [], plans = [], selected = null, filtered = [];
+const css = (name, el = document.documentElement) => getComputedStyle(el).getPropertyValue(name).trim();
+const OS = Object.fromEntries([...document.querySelectorAll("#os input")]
+  .map((c) => [c.value, { name: c.parentElement.textContent.trim(), check: c }]));
+const MARKERS = Object.fromEntries(Object.entries(OS).map(([os, { check }]) =>
+  [os, { radius: 6, weight: 1, color: "#fff", fillColor: css("--c-marker", check.parentElement), fillOpacity: 0.85 }]));
+let shown = [], rows = [], plans = {}, selected = null, filtered = [];
 
 const uniq = (xs) => [...new Set(xs)].sort((a, b) => a.localeCompare(b, "es"));
-const badges = (r) => (r.plans.length === plans.length && plans.length > 1 ? ["Todos los planes"] : r.plans)
-  .map((p) => `<span class="badge">${esc(p)}</span>`).join(" ");
+// The obra social's name leads its badges only while more than one is shown.
+const badges = (r) => [
+  ...(shown.length > 1 ? [`<span class="badge name os-${r.os}">${esc(OS[r.os].name)}</span>`] : []),
+  ...(r.plans.length === plans[r.os].length && plans[r.os].length > 1 ? ["Todos los planes"] : r.plans)
+    .map((p) => `<span class="badge os-${r.os}">${esc(p)}</span>`),
+].join(" ");
 
-// Loads an obra social's cartilla (dosuba.json, unionpersonal.json) and rebuilds
-// the filters and markers, keeping the chosen location.
+// Rows of one obra social's cartilla (dosuba.json, unionpersonal.json), fetched once.
+const cartillas = {};
+function cartilla(os) {
+  cartillas[os] ??= fetch(`${os}.json`).then((r) => r.json()).then((data) => {
+    // The source lists a provider once per plan; merge rows that differ only in plan.
+    const merged = new Map();
+    for (const { plan, ...r } of data) {
+      const key = JSON.stringify(r);
+      if (!merged.has(key)) merged.set(key, { ...r, os, plans: [] });
+      merged.get(key).plans.push(plan);
+    }
+    return [...merged.values()].map((r) => {
+      r.esps = r.especialidades.split(",").map((s) => s.trim()).filter(Boolean);
+      r.espKeys = r.esps.map(norm);
+      r.text = norm([r.nombre, r.direccion, r.localidad, r.tipo, r.especialidades].join(" "));
+      r.maps_url ||= "https://www.google.com/maps/search/?api=1&query=" +
+        encodeURIComponent(`${r.direccion.split(" - ")[0]}, ${r.localidad}`);
+      if (r.lat != null) {
+        r.marker = L.circleMarker([r.lat, r.lon], MARKERS[os]).bindPopup(() => popup(r));
+        r.marker.on("click", () => highlight(r));
+      }
+      return r;
+    });
+  });
+  return cartillas[os];
+}
+
+// Shows the chosen obra sociales, rebuilding the filters and keeping the location.
 let loading = null;
-async function load(os) {
-  loading = os;
+async function load(oss) {
+  loading = oss.join();
   $("status").textContent = "Cargando cartilla…";
-  const data = await (await fetch(`${os}.json`)).json();
-  if (loading !== os) return; // another obra social was chosen meanwhile
+  const data = await Promise.all(oss.map(cartilla));
+  if (loading !== oss.join()) return; // another choice was made meanwhile
 
-  document.documentElement.dataset.os = os;
-  const marker = getComputedStyle(document.documentElement).getPropertyValue("--marker").trim();
-  MARKER = { radius: 6, weight: 1, color: "#fff", fillColor: marker, fillOpacity: 0.85 };
-
-  // The source lists a provider once per plan; merge rows that differ only in plan.
-  const merged = new Map();
-  for (const { plan, ...r } of data) {
-    const key = JSON.stringify(r);
-    if (!merged.has(key)) merged.set(key, { ...r, plans: [] });
-    merged.get(key).plans.push(plan);
-  }
-  rows = [...merged.values()].map((r, i) => ({
-    ...r, i,
-    plan: r.plans.join(", "),
-    esps: r.especialidades.split(",").map((s) => s.trim()).filter(Boolean),
-    text: norm([r.nombre, r.direccion, r.localidad, r.tipo, r.especialidades].join(" ")),
-    maps_url: r.maps_url || "https://www.google.com/maps/search/?api=1&query=" +
-      encodeURIComponent(`${r.direccion.split(" - ")[0]}, ${r.localidad}`),
-  }));
-  for (const r of rows) {
-    if (r.lat == null) continue;
-    r.marker = L.circleMarker([r.lat, r.lon], MARKER).bindPopup(() => popup(r));
-    r.marker.on("click", () => highlight(r));
-  }
+  shown = oss;
+  document.documentElement.dataset.os = oss.length > 1 ? "both" : oss[0];
+  // Larger cartillas first, so their dots don't cover the smaller ones.
+  rows = [...data].sort((a, b) => b.length - a.length).flat();
+  rows.forEach((r, i) => {
+    r.i = i;
+    r.plan = (oss.length > 1 ? `${OS[r.os].name}: ` : "") + r.plans.join(", ");
+  });
+  selected?.marker?.setStyle(MARKERS[selected.os]);
   selected = null;
 
-  // Filter options
-  plans = uniq(rows.flatMap((r) => r.plans));
+  // Filter options, keeping the current choices that still apply.
+  plans = Object.fromEntries(oss.map((os, i) => [os, uniq(data[i].flatMap((r) => r.plans))]));
+  const plan = $("plan").value;
   $("plan").length = 1;
-  for (const p of plans) $("plan").add(new Option(p, p));
+  $("plan").querySelectorAll("optgroup").forEach((g) => g.remove());
+  for (const os of oss) {
+    let group = $("plan");
+    if (oss.length > 1) {
+      group = group.appendChild(document.createElement("optgroup"));
+      group.label = OS[os].name;
+    }
+    for (const p of plans[os]) group.appendChild(new Option(p, `${os}|${p}`));
+  }
+  $("plan").value = plan;
+  if ($("plan").selectedIndex < 0) $("plan").value = "";
+
+  const tipo = $("tipo").value;
   const tipos = uniq(rows.map((r) => r.tipo).filter(Boolean));
   $("tipo").length = 1;
   for (const t of tipos) $("tipo").add(new Option(t, t));
+  $("tipo").value = tipos.includes(tipo) ? tipo : "";
   $("tipo-label").hidden = !tipos.length;
   fillEsps();
 
@@ -213,12 +265,21 @@ async function load(os) {
 }
 
 // Specialties offered by the chosen tipo, keeping the current choice if it still applies.
+// The cartillas spell them differently ("Cardiologia", "CARDIOLOGIA"): options are keyed
+// by norm(), labeled preferring the spelling that is not all caps.
 function fillEsps() {
-  const tipo = $("tipo").value, cur = $("esp").value;
-  const esps = uniq(rows.filter((r) => !tipo || r.tipo === tipo).flatMap((r) => r.esps));
+  const tipo = $("tipo").value, cur = $("esp").value, labels = new Map();
+  for (const r of rows) {
+    if (tipo && r.tipo !== tipo) continue;
+    r.esps.forEach((e, j) => {
+      const k = r.espKeys[j], l = labels.get(k);
+      if (!l || (l === l.toUpperCase() && e !== e.toUpperCase())) labels.set(k, e);
+    });
+  }
+  const esps = [...labels].sort((a, b) => a[1].localeCompare(b[1], "es"));
   $("esp").length = 1;
-  for (const e of esps) $("esp").add(new Option(e, e));
-  $("esp").value = esps.includes(cur) ? cur : "";
+  for (const [k, l] of esps) $("esp").add(new Option(l, k));
+  $("esp").value = labels.has(cur) ? cur : "";
 }
 
 function popup(r) {
@@ -282,18 +343,18 @@ const fmt = (km) => (km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} k
 function update(fit = false) {
   const radius = +$("radius").value;
   $("rv").textContent = `${radius} km`;
-  const plan = $("plan").value, tipo = $("tipo").value, esp = $("esp").value, q = norm($("q").value.trim());
+  const [planOs, plan] = $("plan").value.split("|"), tipo = $("tipo").value, esp = $("esp").value, q = norm($("q").value.trim());
 
   for (const r of rows) r.dist = origin && r.lat != null ? haversine(origin, r) : null;
   filtered = rows.filter((r) =>
-    (!plan || r.plans.includes(plan)) &&
+    (!plan || (r.os === planOs && r.plans.includes(plan))) &&
     (!tipo || r.tipo === tipo) &&
-    (!esp || r.esps.includes(esp)) &&
+    (!esp || r.espKeys.includes(esp)) &&
     (!q || r.text.includes(q)) &&
     (!origin || (r.dist != null && r.dist <= radius)));
 
   if (circle) circle.remove();
-  circle = origin ? L.circle([origin.lat, origin.lon], { radius: radius * 1000, color: MARKER.fillColor, weight: 1, fillOpacity: 0.06, interactive: false }).addTo(map) : null;
+  circle = origin ? L.circle([origin.lat, origin.lon], { radius: radius * 1000, color: css("--accent"), weight: 1, fillOpacity: 0.06, interactive: false }).addTo(map) : null;
 
   layer.clearLayers();
   for (const r of filtered) if (r.marker) layer.addLayer(r.marker);
@@ -343,7 +404,7 @@ function highlight(r) {
   document.querySelectorAll("tr.sel").forEach((t) => t.classList.remove("sel"));
   const tr = document.querySelector(`tr[data-i="${r.i}"]`);
   tr?.classList.add("sel");
-  selected?.marker?.setStyle(MARKER);
+  selected?.marker?.setStyle(MARKERS[selected.os]);
   selected = r;
   r.marker?.setStyle(MARKER_SEL).bringToFront();
 }
@@ -366,14 +427,18 @@ $("radius").onchange = () => update(true);
 $("tipo").oninput = () => { fillEsps(); update(); };
 for (const id of ["plan", "esp", "q"]) $(id).oninput = () => update();
 
-// The obra social is kept in the URL (#dosuba, #unionpersonal), so links keep it.
-const OS = [...$("os").options].map((o) => o.value);
+// The obra sociales shown are kept in the URL (#dosuba,unionpersonal), so links keep them.
 function fromHash() {
-  const os = location.hash.slice(1);
-  $("os").value = OS.includes(os) ? os : OS[0];
-  load($("os").value);
+  const oss = location.hash.slice(1).split(",").filter((os) => os in OS);
+  if (!oss.length) oss.push(Object.keys(OS)[0]);
+  for (const [os, { check }] of Object.entries(OS)) check.checked = oss.includes(os);
+  load(oss);
 }
-$("os").onchange = () => (location.hash = $("os").value);
+for (const { check } of Object.values(OS)) check.onchange = () => {
+  const oss = Object.keys(OS).filter((os) => OS[os].check.checked);
+  if (!oss.length) return (check.checked = true); // keep at least one
+  location.hash = oss.join(",");
+};
 window.onhashchange = fromHash;
 fromHash();
 </script>
