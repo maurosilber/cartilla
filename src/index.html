@@ -49,28 +49,33 @@
   button { cursor: pointer; }
   button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .row { display: flex; gap: 4px; }
-  /* Filters sit above the table they filter, in groups (texto, ubicación, plan),
-     each a row of fields that wraps and stretches to fill the width. */
-  #filters { display: flex; flex-direction: column; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
-  #filters section { display: flex; flex-wrap: wrap; gap: 6px 12px; }
-  #filters section > * { flex: 1 1 140px; min-width: 0; }
-  #filters section + section { border-top: 1px solid var(--line); padding-top: 10px; }
-  #filters section > h3 { flex-basis: 100%; margin: 0; font-size: 12px; font-weight: 600; }
-  #filters .wide { flex: 2 1 280px; }
-  #filters input, #filters select { width: 100%; min-width: 0; height: 30px; }
-  #filters .row input, #filters .row select { flex: 1; }
-  #filters .row button { height: 30px; padding-block: 0; }
+  /* Filters sit above the table they filter, in groups (texto, plan), and below the map
+     the place group (dirección, distancia); each a row of fields that wraps and stretches. */
+  .filters { display: flex; flex-direction: column; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  .filters section { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+  .filters section > * { flex: 1 1 140px; min-width: 0; }
+  .filters section + section { border-top: 1px solid var(--line); padding-top: 10px; }
+  .filters section > h3 { flex-basis: 100%; margin: 0; font-size: 12px; font-weight: 600; }
+  .filters .wide { flex: 2 1 280px; }
+  .filters input, .filters select { width: 100%; min-width: 0; height: 30px; }
+  .filters .row input, .filters .row select { flex: 1; }
+  .filters .row #radius { flex: 1; }
+  /* The slider shows once a point is chosen, taking the place of the address search, until reset. */
+  #main:not(.has-origin) .radius, #main.has-origin #addr, #main.has-origin #go { display: none; }
+  .filters .row button { height: 30px; padding-block: 0; }
   /* A reset button next to each filter, faded while the filter is not set. */
-  #filters .reset { flex: none; width: 30px; padding: 0; color: var(--muted); }
-  #filters .reset:disabled { opacity: 0.35; cursor: default; }
+  .filters .reset { flex: none; width: 30px; padding: 0; color: var(--muted); }
+  .filters .reset:disabled { opacity: 0.35; cursor: default; }
   input[type=search]::-webkit-search-cancel-button { display: none; }
   #filters h2 { margin: 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--accent); }
-  #filters input[type=range] { padding: 0; border: 0; accent-color: var(--accent); }
+  .filters input[type=range] { padding: 0; border: 0; accent-color: var(--accent); }
   #toggle { display: none; }
   /* Shown over the map while no cartilla is chosen. */
   #notice { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 1000; width: max-content; max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 8px; background: var(--bg); color: var(--fg); border: 1px solid var(--line); box-shadow: 0 2px 10px rgb(0 0 0 / 0.2); font-weight: 600; text-align: center; }
   #main { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); flex: 1; min-height: 0; }
-  #map { height: 100%; }
+  #mapcol { display: flex; flex-direction: column; min-height: 0; }
+  #map { flex: 1; min-height: 0; }
+  #place { border-bottom: 0; border-top: 1px solid var(--line); }
   #side { display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--line); }
   #statusbar { display: flex; gap: 8px; align-items: center; padding: 6px 12px; border-bottom: 1px solid var(--line); }
   #status { flex: 1; color: var(--muted); }
@@ -95,16 +100,19 @@
     body { display: block; height: auto; }
     header { padding: 10px 12px; gap: 8px; }
     input, select, button { padding: 8px 10px; }
-    #toggle { display: block; }
-    #filters { display: none; }
+    #toggle { display: block; flex: none; }
     #filters h2 { display: none; }
-    #side.open #filters { display: flex; }
-    /* The panel opens below the Filtros button, so the button stays in place. */
-    #statusbar { order: -1; }
-    #filters section > * { flex-basis: 100%; }
-    #filters input, #filters select, #filters .row button { height: auto; }
-    #filters .reset { width: 40px; }
+    /* The Filtros button, next to the text search, opens the plan and especialidad filters below it. */
+    #side:not(.open) #f-more { display: none; }
+    #place { border-bottom: 1px solid var(--line); }
+    .filters section > * { flex-basis: 100%; }
+    /* Plan, tipo and especialidad share a single row. */
+    #f-more { flex-wrap: nowrap; }
+    .filters #f-more > * { flex: 1 1 0; }
+    .filters input, .filters select, .filters .row button { height: auto; }
+    .filters .reset { width: 40px; }
     #main { grid-template-columns: minmax(0, 1fr); height: auto; }
+    #mapcol { display: block; }
     #map { height: 45vh; height: 45dvh; }
     #side { border-left: 0; }
     #tablewrap { overflow: visible; }
@@ -134,33 +142,35 @@
 </header>
 <div id="main">
   <div id="notice" hidden>Elegí una cartilla (DOSUBA o Unión Personal) arriba para ver sus prestadores.</div>
-  <div id="map"></div>
-  <div id="side">
-    <div id="filters">
-      <h2>Filtros</h2>
-      <section role="group">
-        <span class="row">
-          <input id="q" type="search" aria-label="Texto" placeholder="nombre, dirección, especialidad, teléfono…">
-          <button class="reset" data-reset="q" title="Quitar este filtro" aria-label="Quitar este filtro">✕</button>
-        </span>
-      </section>
-      <section role="group">
-        <label class="wide">Dirección, clic en el mapa o GPS
+  <div id="mapcol">
+    <div id="map"></div>
+    <div id="place" class="filters">
+      <section id="f-place" role="group">
+        <label class="wide"><span>Dirección, GPS, o clic en el mapa<span class="radius"> · hasta <span id="rv"></span></span></span>
           <span class="row">
             <input id="addr" type="search" enterkeyhint="search" autocomplete="street-address" placeholder="ej. Av. Santa Fe 2245">
             <button id="go" class="primary">Buscar</button>
             <button id="gps" title="Usar mi ubicación">📍</button>
-            <button class="reset" data-reset="addr" title="Quitar este filtro" aria-label="Quitar este filtro">✕</button>
-          </span>
-        </label>
-        <label><span>Distancia máx.: <span id="rv"></span></span>
-          <span class="row">
-            <input id="radius" type="range" min="0" step="1">
-            <button class="reset" data-reset="radius" title="Quitar este filtro" aria-label="Quitar este filtro">✕</button>
+            <input id="radius" class="radius" type="range" min="0" step="1" aria-label="Distancia máxima">
+            <button class="reset" data-reset="place" title="Quitar este filtro" aria-label="Quitar este filtro">✕</button>
           </span>
         </label>
       </section>
-      <section role="group">
+    </div>
+  </div>
+  <div id="side">
+    <div id="filters" class="filters">
+      <h2>Filtros</h2>
+      <section id="f-text" role="group">
+        <label class="wide">Buscar
+          <span class="row">
+            <input id="q" type="search" placeholder="nombre, dirección, especialidad, teléfono…">
+            <button class="reset" data-reset="q" title="Quitar este filtro" aria-label="Quitar este filtro">✕</button>
+            <button id="toggle" class="primary" aria-expanded="false" aria-controls="f-more">Más filtros</button>
+          </span>
+        </label>
+      </section>
+      <section id="f-more" role="group">
         <label>Plan
           <span class="row">
             <select id="plan"><option value="">Todos</option></select>
@@ -184,7 +194,6 @@
     </div>
     <div id="statusbar">
       <span id="status"></span>
-      <button id="toggle" class="primary" aria-expanded="false" aria-controls="filters">Filtros</button>
     </div>
     <div id="tablewrap">
       <table>
@@ -446,6 +455,7 @@ function update(fit = false) {
   syncResets();
   const radius = radiusKm();
   $("rv").textContent = fmt(radius);
+  $("main").classList.toggle("has-origin", !!origin);
   const [planOs, plan] = $("plan").value.split("|"), tipo = $("tipo").value, esp = norm($("esp").value).split(/[^a-z0-9]+/).filter(Boolean), q = norm($("q").value).split(/\s+/).filter(Boolean);
 
   // Matched once per distinct specialty, not once per provider.
@@ -541,16 +551,18 @@ for (const id of ["plan", "esp", "q"]) $(id).oninput = () => update();
 // Reset buttons, one per filter, enabled while their filter is set.
 const RESETS = {
   q: { set: () => !!$("q").value, reset: () => { $("q").value = ""; update(); } },
-  addr: { set: () => !!(origin || $("addr").value), reset: clearOrigin },
-  radius: { set: () => +$("radius").value !== RADIUS_DEFAULT, reset: () => { $("radius").value = RADIUS_DEFAULT; update(!!origin); } },
+  place: {
+    set: () => !!(origin || $("addr").value) || +$("radius").value !== RADIUS_DEFAULT,
+    reset: () => { $("radius").value = RADIUS_DEFAULT; clearOrigin(); },
+  },
   plan: { set: () => !!$("plan").value, reset: () => { $("plan").value = ""; update(); } },
   tipo: { set: () => !!$("tipo").value, reset: () => { $("tipo").value = ""; fillEsps(); update(); } },
   esp: { set: () => !!$("esp").value, reset: () => { $("esp").value = ""; update(); } },
 };
 function syncResets() {
-  document.querySelectorAll("#filters .reset").forEach((b) => (b.disabled = !RESETS[b.dataset.reset].set()));
+  document.querySelectorAll(".filters .reset").forEach((b) => (b.disabled = !RESETS[b.dataset.reset].set()));
 }
-document.querySelectorAll("#filters .reset").forEach((b) => (b.onclick = RESETS[b.dataset.reset].reset));
+document.querySelectorAll(".filters .reset").forEach((b) => (b.onclick = RESETS[b.dataset.reset].reset));
 $("addr").addEventListener("input", syncResets);
 
 // The obra sociales shown are kept in the URL (#dosuba,unionpersonal), so links keep them.
