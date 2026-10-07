@@ -91,6 +91,9 @@ def main(out="cartilla.csv"):
             )
         rows.extend({"plan": plan_name, **r} for r in plan_rows)
 
+    # By every column, so the order doesn't depend on the site's pagination.
+    rows.sort(key=lambda r: (r["plan"], r["nombre"], *r.values()))
+
     with open(out, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader()

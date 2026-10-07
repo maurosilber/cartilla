@@ -119,9 +119,11 @@ def main(out="cartilla.csv"):
                 if (esp := clean(p["NomEspecialidad"])) not in row["especialidades"]:
                     row["especialidades"].append(esp)
 
-    rows = sorted(offices.values(), key=lambda r: (r["plan"], r["nombre"]))
+    rows = list(offices.values())
     for r in rows:
         r["especialidades"] = ",".join(sorted(r["especialidades"]))
+    # By every column, so the order doesn't depend on the API's.
+    rows.sort(key=lambda r: (r["plan"], r["nombre"], *r.values()))
     with open(out, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]), lineterminator="\n")
         w.writeheader()
