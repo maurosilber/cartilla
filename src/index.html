@@ -39,6 +39,11 @@
   label.os { flex-direction: row; align-items: center; gap: 6px; font-size: 15px; font-weight: 600; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px 3px 8px; cursor: pointer; user-select: none; }
   label.os input { accent-color: var(--c-marker); margin: 0; }
   label.os:has(input:checked) { color: var(--c); border-color: var(--c); background: var(--c-hl); }
+  /* While its cartilla downloads, the pill fills from left to right (--p, set by download())
+     and its checkbox turns into a spinner. */
+  label.os.loading, label.os.loading:has(input:checked) { background: linear-gradient(to right, color-mix(in srgb, var(--c) 30%, var(--c-hl)) var(--p), var(--c-hl) var(--p)); }
+  label.os.loading input { appearance: none; flex: none; width: 13px; height: 13px; padding: 0; border: 2px solid var(--c); border-right-color: transparent; border-radius: 50%; background: none; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(1turn); } }
   label { display: flex; flex-direction: column; font-size: 12px; color: var(--muted); gap: 2px; }
   input, select, button { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
   button { cursor: pointer; }
@@ -236,10 +241,38 @@ const badges = (r) => [
     .map((p) => `<span class="badge os-${r.os}">${esc(p)}</span>`),
 ].join(" ");
 
+// Bytes of each cartilla's JSON, filled in by build.py.
+const SIZES = {};
+
+// Downloads a cartilla, showing the progress on its pill. The size comes from SIZES, or
+// from Content-Length when the response is not compressed (then the bytes read match it).
+async function download(os) {
+  const res = await fetch(`${os}.json`);
+  if (!res.ok) throw new Error(`${os}.json: ${res.status}`);
+  const total = SIZES[os] ?? (!res.headers.get("Content-Encoding") && +res.headers.get("Content-Length"));
+  if (!total || !res.body) return res.json();
+  const pill = OS[os].check.parentElement, chunks = [];
+  let n = 0;
+  pill.classList.add("loading");
+  pill.style.setProperty("--p", "0%");
+  try {
+    for (const reader = res.body.getReader(); ;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      n += value.length;
+      pill.style.setProperty("--p", `${Math.min(100, (100 * n) / total)}%`);
+    }
+  } finally {
+    pill.classList.remove("loading");
+  }
+  return JSON.parse(await new Blob(chunks).text());
+}
+
 // Rows of one obra social's cartilla (dosuba.json, unionpersonal.json), fetched once.
 const cartillas = {};
 function cartilla(os) {
-  cartillas[os] ??= fetch(`${os}.json`).then((r) => r.json()).then((data) =>
+  cartillas[os] ??= download(os).then((data) =>
     data.map((r) => {
       r.os = os;
       r.esps = r.especialidades.split(",").map((s) => s.trim()).filter(Boolean);

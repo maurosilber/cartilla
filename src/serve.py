@@ -3,15 +3,10 @@
 Usage: python3 serve.py
 """
 
-import shutil
-
 from livereload import Server
 
-
-def copy_index():
-    shutil.copy("src/index.html", "dist/index.html")
-
+from build import build
 
 server = Server()
-server.watch("src/index.html", copy_index)
+server.watch("src/index.html", build)
 server.serve(root="dist", port=8000)

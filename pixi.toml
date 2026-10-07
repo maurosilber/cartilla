@@ -46,7 +46,7 @@ geocode-unionpersonal = {
 }
 # What is published to GitHub Pages.
 build = {
-  cmd = "cp src/index.html dist",
+  cmd = "python src/build.py",
   depends-on = [
     "geocode-dosuba",
     "geocode-unionpersonal",
