@@ -242,11 +242,12 @@
     <label>Especialidades (separadas por comas)<textarea name="especialidades" rows="2"></textarea></label>
     <label>Comentario (opcional)<textarea name="comment" rows="2" placeholder="ej. ya no atiende en esta dirección"></textarea></label>
     <span id="fixloc" class="small"></span>
+    <div id="captcha"></div>
     <span id="fixnote" class="small"></span>
     <div class="actions">
       <button type="button" id="fixplace">Ubicar en el mapa</button>
       <button type="button" id="fixcancel">Cancelar</button>
-      <button type="submit" class="primary">Enviar</button>
+      <button type="submit" id="fixsend" class="primary">Enviar</button>
     </div>
   </form>
 </dialog>
@@ -618,6 +619,21 @@ $("addr").addEventListener("input", syncResets);
 // Corrections: users can edit a provider's data and place it on the map. They are sent
 // as a GitHub issue, which correction.py turns into a pull request to review.
 const REPO = "maurosilber/cartilla";
+// The worker that files the issues (worker/), so that users don't need a GitHub account,
+// and its Turnstile site key. Without a URL, the page opens GitHub's form instead.
+const REPORT = { url: "", sitekey: "" };
+let captcha = null;
+if (REPORT.url) {
+  const s = document.head.appendChild(document.createElement("script"));
+  s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+  s.onload = () => $("fix").open && renderCaptcha();
+}
+// Rendered once the dialog shows; a token is good for a single correction.
+function renderCaptcha() {
+  if (!REPORT.url || !window.turnstile) return;
+  if (captcha == null) captcha = turnstile.render("#captcha", { sitekey: REPORT.sitekey, size: "flexible" });
+  else turnstile.reset(captcha);
+}
 const FIELDS = ["direccion", "localidad", "telefonos", "horario", "especialidades"];
 let placing = null, pin = null, fixing = null;
 
@@ -653,6 +669,17 @@ function stopPlacing() {
   pin = null;
   $("placebar").hidden = true;
   $("placenext").disabled = true;
+  $("placenext").hidden = false;
+  $("placecancel").textContent = "Cancelar";
+}
+// The bar over the map, once more, to thank for a correction sent.
+function thank(issue) {
+  stopPlacing();
+  $("placetext").innerHTML = `¡Gracias! Vamos a revisar la corrección
+    (<a href="${esc(issue.url)}" target="_blank" rel="noopener">#${+issue.number}</a>).`;
+  $("placenext").hidden = true;
+  $("placecancel").textContent = "Cerrar";
+  $("placebar").hidden = false;
 }
 $("placecancel").onclick = stopPlacing;
 $("placenext").onclick = () => openFix(placing, pin.getLatLng());
@@ -669,15 +696,16 @@ function openFix(r, loc = null) {
   $("fixname").textContent = r.nombre;
   $("fixloc").textContent = loc ? "📍 Se enviará también la ubicación marcada en el mapa." : "";
   $("fixplace").textContent = loc ? "Volver al mapa" : "Ubicar en el mapa";
-  $("fixnote").textContent = "Se abrirá GitHub para publicar la corrección (necesitás una cuenta).";
+  $("fixnote").textContent = REPORT.url ? "" : "Se abrirá GitHub para publicar la corrección (necesitás una cuenta).";
   $("fix").showModal();
+  renderCaptcha();
 }
 $("fixcancel").onclick = () => $("fix").close();
 $("fixplace").onclick = () => {
   $("fix").close();
   startPlacing(fixing.r, fixing.loc);
 };
-$("fix").querySelector("form").onsubmit = (e) => {
+$("fix").querySelector("form").onsubmit = async (e) => {
   e.preventDefault();
   const { r, loc } = fixing, f = e.target.elements;
   const fields = Object.fromEntries(FIELDS.filter((k) => k in r)
@@ -688,9 +716,37 @@ $("fix").querySelector("form").onsubmit = (e) => {
     return;
   }
   const { title, body } = report(r, fields, loc, comment);
-  window.open(`https://github.com/${REPO}/issues/new?` + new URLSearchParams({ title, body }), "_blank", "noopener");
-  $("fix").close();
-  stopPlacing();
+  const github = `https://github.com/${REPO}/issues/new?` + new URLSearchParams({ title, body });
+  if (!REPORT.url) {
+    window.open(github, "_blank", "noopener");
+    $("fix").close();
+    stopPlacing();
+    return;
+  }
+  const token = captcha != null && window.turnstile.getResponse(captcha);
+  if (!token) {
+    $("fixnote").textContent = "Esperá a que termine la verificación de que no sos un robot.";
+    return;
+  }
+  $("fixnote").textContent = "Enviando…";
+  $("fixsend").disabled = true;
+  try {
+    const res = await fetch(REPORT.url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, body, token }),
+    });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(d.error ?? `error ${res.status}`);
+    $("fix").close();
+    thank(d);
+  } catch (err) {
+    $("fixnote").innerHTML = `No se pudo enviar (${esc(err.message)}).
+      Podés <a href="${esc(github)}" target="_blank" rel="noopener">enviarla por GitHub</a>.`;
+    renderCaptcha();
+  } finally {
+    $("fixsend").disabled = false;
+  }
 };
 
 // The issue: readable, ending with the JSON block that correction.py reads.

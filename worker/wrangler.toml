@@ -1,0 +1,9 @@
+# Cloudflare Worker that files the page's corrections as GitHub issues (see index.js).
+name = "cartilla-corrections"
+main = "index.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+# The page allowed to send corrections (GitHub Pages).
+ORIGIN = "https://maurosilber.github.io"
+REPO = "maurosilber/cartilla"
