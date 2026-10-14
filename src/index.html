@@ -122,6 +122,18 @@
   #fix form { display: flex; flex-direction: column; gap: 8px; }
   #fix input, #fix textarea { width: 100%; }
   #fix textarea { resize: vertical; }
+  /* Phones and specialties are lists, edited one item at a time. */
+  #fix fieldset { display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 0; border: 0; min-width: 0; font-size: 12px; }
+  #fix legend { padding: 0; margin-bottom: 2px; font-size: 12px; color: var(--muted); }
+  #fix fieldset > button { align-self: flex-start; }
+  #fix .row { align-items: center; }
+  #fix .row input:not([type=checkbox]) { flex: 1; min-width: 0; }
+  #fix .row button { flex: none; }
+  #fix label.wa-check { flex: none; flex-direction: row; align-items: center; gap: 4px; font-size: 13px; color: var(--fg); }
+  #fix label.wa-check input { width: auto; margin: 0; accent-color: #25d366; }
+  #fixesps { display: flex; flex-wrap: wrap; gap: 4px; }
+  #fixesps .badge { display: inline-flex; align-items: center; gap: 2px; margin: 0; font-size: 12px; white-space: normal; }
+  #fixesps .badge button { padding: 0 2px; border: 0; background: none; color: inherit; line-height: 1; }
   #fix .actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
   #fix .actions :first-child { margin-right: auto; }
   @media (max-width: 800px) {
@@ -241,11 +253,24 @@
   <form>
     <h2>Corregir: <span id="fixname"></span></h2>
     <span class="small">Cambiá lo que esté mal. Revisamos cada corrección antes de publicarla.</span>
-    <label>Dirección<input name="direccion"></label>
-    <label>Localidad<input name="localidad"></label>
-    <label>Teléfonos<input name="telefonos"></label>
-    <label>Horario<input name="horario"></label>
-    <label>Especialidades (separadas por comas)<textarea name="especialidades" rows="2"></textarea></label>
+    <label data-field="direccion">Dirección<input name="direccion"></label>
+    <label data-field="localidad">Localidad<input name="localidad" list="fixlocs" autocomplete="off"></label>
+    <datalist id="fixlocs"></datalist>
+    <fieldset data-field="telefonos">
+      <legend>Teléfonos</legend>
+      <div id="fixphones"></div>
+      <button type="button" id="fixaddphone">+ Agregar teléfono</button>
+    </fieldset>
+    <label data-field="horario">Horario<input name="horario"></label>
+    <fieldset data-field="especialidades">
+      <legend>Especialidades</legend>
+      <div id="fixesps"></div>
+      <span class="row">
+        <input id="fixesp" list="fixesplist" autocomplete="off" placeholder="Buscá una especialidad para agregarla">
+        <button type="button" id="fixaddesp">Agregar</button>
+      </span>
+      <datalist id="fixesplist"></datalist>
+    </fieldset>
     <label>Comentario (opcional)<textarea name="comment" rows="2" placeholder="ej. ya no atiende en esta dirección"></textarea></label>
     <span id="fixloc" class="small"></span>
     <div id="captcha"></div>
@@ -698,15 +723,99 @@ function thank(issue) {
 $("placecancel").onclick = stopPlacing;
 $("placenext").onclick = () => openFix(placing, pin.getLatLng());
 
+// The choices offered in the dialog, from the provider's own cartilla (each spells the
+// specialties its own way): the localidades, as suggestions, and the specialties,
+// the only ones that can be added.
+const choices = {};
+async function fixChoices(os) {
+  if (!choices[os]) {
+    const data = await cartilla(os);
+    const esps = new Map(data.flatMap((r) => r.esps.map((e, j) => [r.espKeys[j], e])));
+    choices[os] = { esps, localidades: uniq(data.map((r) => r.localidad).filter(Boolean)) };
+    choices[os].espList = [...esps.values()].sort((a, b) => a.localeCompare(b, "es"));
+  }
+  return choices[os];
+}
+
+// Phones are edited one per row, with WhatsApp as a checkbox instead of a word.
+const parsePhone = (p) => ({ number: p.replace(/\s*WhatsApp\s*/g, " ").trim(), wa: p.includes("WhatsApp") });
+const formatPhone = ({ number, wa }) => (wa ? `${number} WhatsApp` : number);
+// The separator each cartilla uses between phones (see cartilla()).
+const PHONE_SEP = { dosuba: " | ", unionpersonal: " / " };
+function addPhoneRow({ number = "", wa = false } = {}) {
+  const row = document.createElement("div");
+  row.className = "row";
+  row.innerHTML = `<input type="tel" inputmode="tel" placeholder="ej. 4961-6767 o 11 5700-0787" aria-label="Teléfono">
+    <label class="wa-check" title="Tiene WhatsApp"><input type="checkbox">${WA_ICON}</label>
+    <button type="button" title="Quitar este teléfono" aria-label="Quitar este teléfono">✕</button>`;
+  const [input, check] = row.querySelectorAll("input");
+  input.value = number;
+  check.checked = wa;
+  row.querySelector("button").onclick = () => row.remove();
+  $("fixphones").append(row);
+  return input;
+}
+const fixPhones = () => [...$("fixphones").children]
+  .map((row) => {
+    const [input, check] = row.querySelectorAll("input");
+    return { number: input.value.replace(/WhatsApp/g, "").replace(/\s+/g, " ").trim(), wa: check.checked };
+  })
+  .filter((p) => p.number);
+
+// Specialties are chips, added from the cartilla's list.
+let fixEsps = [];
+function renderEsps() {
+  $("fixesps").innerHTML = fixEsps.map((e, i) => `<span class="badge">${esc(e)}<button type="button"
+    data-i="${i}" title="Quitar" aria-label="Quitar ${esc(e)}">✕</button></span>`).join("");
+}
+$("fixesps").onclick = (e) => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  fixEsps.splice(+b.dataset.i, 1);
+  renderEsps();
+};
+function addEsp() {
+  const value = $("fixesp").value.trim();
+  if (!value) return;
+  const e = choices[fixing.r.os].esps.get(norm(value));
+  if (!e) {
+    $("fixnote").textContent = `"${value}" no está en la cartilla: elegí una especialidad de la lista.`;
+    return;
+  }
+  if (!fixEsps.includes(e)) fixEsps.push(e);
+  $("fixesp").value = "";
+  $("fixnote").textContent = "";
+  renderEsps();
+}
+$("fixaddesp").onclick = addEsp;
+$("fixesp").onkeydown = (e) => {
+  if (e.key === "Enter") { e.preventDefault(); addEsp(); }
+};
+// Picking a suggestion adds it right away. Browsers send it as an input event that is
+// not an InputEvent (Chrome, Safari) or one replacing the text (Firefox).
+$("fixesp").oninput = (e) => {
+  if (!(e instanceof InputEvent) || e.inputType === "insertReplacementText") addEsp();
+};
+$("fixaddphone").onclick = () => addPhoneRow().focus();
+
 // The dialog to edit a provider's data, with the location chosen on the map (if any).
-function openFix(r, loc = null) {
+async function openFix(r, loc = null) {
   fixing = { r, loc };
+  const { localidades, espList } = await fixChoices(r.os);
   const f = $("fix").querySelector("form");
   f.reset();
+  $("fix").className = `os-${r.os}`;
   for (const k of FIELDS) {
-    f.elements[k].value = r[k] ?? "";
-    f.elements[k].parentElement.hidden = !(k in r);
+    f.querySelector(`[data-field="${k}"]`).hidden = !(k in r);
+    if (f.elements[k]) f.elements[k].value = r[k] ?? "";
   }
+  $("fixlocs").replaceChildren(...localidades.map((l) => new Option(l)));
+  $("fixphones").replaceChildren();
+  r.phones.map(parsePhone).forEach(addPhoneRow);
+  if (!r.phones.length) addPhoneRow();
+  fixEsps = [...r.esps];
+  renderEsps();
+  $("fixesplist").replaceChildren(...espList.map((e) => new Option(e)));
   $("fixname").textContent = r.nombre;
   $("fixloc").textContent = loc ? "📍 Se enviará también la ubicación marcada en el mapa." : "";
   $("fixplace").textContent = loc ? "Volver al mapa" : "Ubicar en el mapa";
@@ -722,8 +831,21 @@ $("fixplace").onclick = () => {
 $("fix").querySelector("form").onsubmit = async (e) => {
   e.preventDefault();
   const { r, loc } = fixing, f = e.target.elements;
-  const fields = Object.fromEntries(FIELDS.filter((k) => k in r)
+  if ($("fixesp").value.trim()) {
+    $("fixnote").textContent = "Agregá la especialidad que escribiste, o borrala.";
+    return;
+  }
+  const fields = Object.fromEntries(["direccion", "localidad", "horario"].filter((k) => k in r)
     .map((k) => [k, f[k].value.trim().replace(/\s+/g, " ")]).filter(([k, v]) => v !== r[k]));
+  // Lists are compared item by item, as the cartilla may join them differently.
+  const phones = fixPhones().map(formatPhone);
+  if (phones.join("\n") !== r.phones.map((p) => formatPhone(parsePhone(p))).join("\n")) {
+    fields.telefonos = phones.join(PHONE_SEP[r.os] ?? " | ");
+  }
+  const esps = [...fixEsps].sort((a, b) => a.localeCompare(b, "es"));
+  if (esps.length !== r.esps.length || esps.some((e) => !r.esps.includes(e))) {
+    fields.especialidades = esps.join(",");
+  }
   const comment = f.comment.value.trim();
   if (!loc && !Object.keys(fields).length && !comment) {
     $("fixnote").textContent = "No cambiaste nada.";

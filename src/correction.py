@@ -4,7 +4,7 @@ The issue's body ends with a ```json block, written by report() in index.html:
 
     {"cartilla": "dosuba",
      "provider": {"nombre": ..., "direccion": ..., "localidad": ...},
-     "fields": {"telefonos": ...},  # optional
+     "fields": {"telefonos": ...},  # optional; especialidades only from the cartilla
      "location": [lat, lon]}        # optional
 
 Anyone can open an issue, so it is checked against the cartilla (with the earlier
@@ -83,6 +83,15 @@ def check(c, number):
         for k, v in fields.items()
         if " ".join(v.split()) != row[k]
     }
+    if "especialidades" in fields:
+        # Only the cartilla's own specialties, as the page offers them.
+        known = {e for r in rows for e in r["especialidades"].split(",") if e}
+        esps = [e.strip() for e in fields["especialidades"].split(",") if e.strip()]
+        if unknown := [e for e in esps if e not in known]:
+            raise Invalid(
+                f"Especialidades que no están en la cartilla: {', '.join(unknown)}."
+            )
+        fields["especialidades"] = ",".join(dict.fromkeys(esps))
 
     loc = c.get("location")
     if loc is not None:
