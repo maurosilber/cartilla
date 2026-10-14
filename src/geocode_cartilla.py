@@ -54,6 +54,87 @@ WHATSAPP = re.compile(
     r"(?<![a-z])(?:wh?a+t+s+a+p+|wa|wat|wath|wh|wha|whap|what|wht|whts|wp|wpp|ws|wsp)(?![a-z])",
     re.IGNORECASE,
 )
+# Phone numbers, with the "+54 011" Unión Personal puts in front of all of them,
+# even those with another area code ("+54 011 0220-4850337") or none ("+54 011 -").
+PREFIX = r"\(?\+54\)?[\s-]*(?:0?11\b)?[\s-]*"
+PHONE = re.compile(rf"{PREFIX}(?:\d[\d\s()-]*\d|\d)?|\d(?:[\d\s()-]*\d)?")
+# Area codes of 3 digits (after the 0); 11 has 2 and the rest 4.
+AREA3 = set(
+    re.findall(
+        r"\d+",
+        "220 221 223 230 236 237 249 260 261 263 264 266 280 291 294 297 298 299 336 341"
+        " 342 343 345 351 353 358 362 364 370 376 379 380 381 383 385 387 388",
+    )
+)
+
+
+def format_number(s):
+    """'011-43891481' -> '4389-1481'; '0237 4883741' -> '0237 488-3741'.
+
+    Local numbers of Buenos Aires (area code 11) are written without it, mobiles
+    as '15-5700-0787' or '11 5700-0787'. Returns None when not a known shape.
+    """
+    s = re.sub(rf"^{PREFIX}", "", s)
+    digits = re.sub(r"\D", "", s)
+    if re.fullmatch(r"0?8[01]0\d{7}", digits):
+        d = digits.removeprefix("0")
+        return f"0{d[:3]}-{d[3:6]}-{d[6:]}"
+    if len(digits) == 10 and digits.startswith("11"):
+        return f"11 {digits[2:6]}-{digits[6:]}"
+    # With the area code, but not its 0: '221 155316666', '3484624728'.
+    national = len(digits) == 12 or len(digits) == 10 and digits[:1] != "1"
+    if national and digits[:1] != "0":
+        digits = "0" + digits
+    if digits.startswith("0"):
+        # Trust a separator after the area code, else the list of area codes.
+        if digits[1:3] == "11":
+            n = 2
+        elif m := re.match(r"0?(\d{3,4})\D", s):
+            n = len(m.group(1))
+        else:
+            n = 3 if digits[1:4] in AREA3 else 4
+        area, local = digits[1 : n + 1], digits[n + 1 :]
+        if area == "11" and len(local) == 10 and local.startswith("11"):
+            return format_number(local)  # '011 1156926080'
+    else:
+        area, local = "11", digits
+    mobile = local.startswith("15") and len(area) + len(local) == 12
+    local = local[2:] if mobile else local
+    if len(area) + len(local) != 10:
+        return None
+    local = f"{'15-' if mobile else ''}{local[:-4]}-{local[-4:]}"
+    return local if area == "11" else f"0{area} {local}"
+
+
+def format_phones(s):
+    """Formats the phone numbers in s, leaving the rest as is.
+
+    Some are two numbers separated by a space ('15-6769-8923 15-5710-9264').
+    """
+
+    def sub(m):
+        number = m.group()
+        # Also the placeholders: '0', '000', '011-0'.
+        if re.fullmatch(r"0*(?:11)?0*", re.sub(rf"^{PREFIX}|\D", "", number)):
+            return ""
+        if (f := format_number(number)) is not None:
+            return f
+        parts = re.split(r"\s+(?=\d)", number)
+        formatted = [format_number(p) for p in parts]
+        if len(parts) > 1 and None not in formatted:
+            return " ".join(formatted)
+        # Without the prefix, unless it holds the only area code ('+54 221 1553').
+        if (p := re.match(PREFIX, number)) and (
+            "11" in p.group() or number[p.end() :].startswith("0")
+        ):
+            number = number[p.end() :]
+        return re.sub(r"\s*-[\s-]*", "-", number).strip("-")
+
+    s = PHONE.sub(sub, s)
+    # Dashes left next to the removed prefixes and the separators.
+    s = re.sub(r"(?<![\w)])-+|-+(?![\w(])", "", s)
+    s = re.sub(r"\s+,", ",", s)
+    return re.sub(r"\s+", " ", s).strip(" ,|/")
 
 
 def norm(s):
@@ -265,6 +346,8 @@ def main(csv_path, cache_path, out):
                 row[k] = re.sub(
                     r"(?<=\d)WhatsApp", " WhatsApp", WHATSAPP.sub("WhatsApp", row[k])
                 )
+        if row.get("telefonos"):
+            row["telefonos"] = format_phones(row["telefonos"])
 
     # The source lists a provider once per plan; merge rows that differ only in plan.
     merged = {}

@@ -30,7 +30,7 @@
   .os-unionpersonal { --c: var(--unionpersonal); --c-hl: var(--unionpersonal-hl); --c-marker: var(--unionpersonal-marker); }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
-  /* Header on top, map and table filling the rest of the viewport. */
+  /* Header on top, map and list filling the rest of the viewport. */
   body { margin: 0; font: 14px/1.4 system-ui, sans-serif; background: var(--bg); color: var(--fg); display: flex; flex-direction: column; height: 100vh; height: 100dvh; }
   header { padding: 10px 16px; border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; }
   header h1 { font-size: 18px; margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -49,7 +49,7 @@
   button { cursor: pointer; }
   button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .row { display: flex; gap: 4px; }
-  /* Filters sit above the table they filter, in groups (texto, plan), and below the map
+  /* Filters sit above the list they filter, in groups (texto, plan), and below the map
      the place group (dirección, distancia); each a row of fields that wraps and stretches. */
   .filters { display: flex; flex-direction: column; gap: 10px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
   .filters section { display: flex; flex-wrap: wrap; gap: 6px 12px; }
@@ -79,15 +79,30 @@
   #side { display: flex; flex-direction: column; min-height: 0; border-left: 1px solid var(--line); }
   #statusbar { display: flex; gap: 8px; align-items: center; padding: 6px 12px; border-bottom: 1px solid var(--line); }
   #status { flex: 1; color: var(--muted); }
-  #tablewrap { overflow: auto; flex: 1; }
-  table { border-collapse: collapse; width: 100%; }
-  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  th { position: sticky; top: 0; background: var(--bg); cursor: pointer; user-select: none; white-space: nowrap; }
-  th[data-dir="1"]::after { content: " ▲"; }
-  th[data-dir="-1"]::after { content: " ▼"; }
-  tbody tr { cursor: pointer; }
-  tbody tr:hover, tbody tr.sel { background: var(--hl); }
-  td.dist { white-space: nowrap; text-align: right; }
+  /* Sort buttons, a pill per key; the active one shows its direction. */
+  #sort { display: flex; gap: 6px; align-items: center; overflow-x: auto; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--bg); }
+  #sort > span { flex: none; font-size: 12px; color: var(--muted); }
+  #sort button { flex: none; border-radius: 999px; padding: 2px 12px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+  #sort button[data-dir] { color: var(--accent); border-color: var(--accent); background: var(--hl); }
+  #sort button[data-dir="1"]::after { content: " ▲"; }
+  #sort button[data-dir="-1"]::after { content: " ▼"; }
+  /* Results as cards in a single column, each edged in its obra social's color. */
+  #listwrap { overflow: auto; flex: 1; }
+  #list { display: flex; flex-direction: column; gap: 10px; padding: 12px; }
+  .card { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border: 1px solid var(--line); border-left: 4px solid var(--c); border-radius: 10px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+  .card:hover { border-color: var(--c); }
+  .card.sel { background: var(--c-hl); border-color: var(--c); box-shadow: 0 0 0 1px var(--c); }
+  .card .head { display: flex; gap: 8px; align-items: baseline; }
+  .card h3 { flex: 1; min-width: 0; margin: 0; font-size: 15px; line-height: 1.3; overflow-wrap: anywhere; }
+  .card .dist { flex: none; font-weight: 600; color: var(--c); font-variant-numeric: tabular-nums; }
+  .card .tipo { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); }
+  .card .esp { color: var(--c); font-size: 13px; }
+  .card .loc { color: var(--muted); }
+  .card .contact { font-size: 13px; color: var(--muted); }
+  .card .phone { display: inline; }
+  .card .phone + .phone::before { content: " · "; }
+  .card footer { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 2px; }
+  .card .links { display: flex; gap: 12px; margin-left: auto; font-size: 12px; }
   .small { font-size: 12px; color: var(--muted); }
   .badge { display: inline-block; font-size: 11px; line-height: 1.5; padding: 0 7px; margin: 0 2px 2px 0; border-radius: 999px; background: var(--c-hl); color: var(--c); border: 1px solid var(--c); white-space: nowrap; }
   .badge.name { font-weight: 600; }
@@ -130,19 +145,12 @@
     #mapcol { display: block; }
     #map { height: 45vh; height: 45dvh; }
     #side { border-left: 0; }
-    #tablewrap { overflow: visible; }
-    /* Results as cards; the header becomes a row of sort buttons. */
-    table, tbody { display: block; }
-    thead { display: block; position: sticky; top: 0; z-index: 1000; background: var(--bg); border-bottom: 1px solid var(--line); }
-    thead tr { display: flex; gap: 6px; overflow-x: auto; padding: 8px 12px; }
-    th { position: static; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: 13px; font-weight: normal; color: var(--muted); }
-    th[data-dir] { color: var(--fg); border-color: var(--accent); }
-    tbody tr { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
-    td { display: block; padding: 0; border: 0; }
-    td.nombre { grid-row: 1; grid-column: 1; font-weight: 600; }
-    td.dist { grid-row: 1; grid-column: 2; }
-    td.dist.none { display: none; }
-    td.direccion, td.esp, td.tel, td.plan { grid-column: 1 / -1; }
+    /* The page scrolls, with the sort buttons stuck on top. */
+    #listwrap { overflow: visible; }
+    #sort { position: sticky; top: 0; z-index: 1000; }
+    #sort button { padding: 4px 12px; font-size: 14px; }
+    .card .contact, .card .esp { font-size: 14px; }
+    .card h3 { font-size: 17px; }
   }
 </style>
 </head>
@@ -216,18 +224,16 @@
       <span id="status"></span>
       <button id="nogeo" hidden></button>
     </div>
-    <div id="tablewrap">
-      <table>
-        <thead><tr>
-          <th data-k="dist">Dist.</th>
-          <th data-k="nombre">Nombre</th>
-          <th data-k="direccion">Dirección</th>
-          <th data-k="especialidades">Especialidades</th>
-          <th data-k="telefonos">Contacto</th>
-          <th data-k="plan">Plan</th>
-        </tr></thead>
-        <tbody id="tb"></tbody>
-      </table>
+    <div id="sort" role="group" aria-label="Ordenar">
+      <span>Ordenar por</span>
+      <button data-k="dist">Distancia</button>
+      <button data-k="nombre">Nombre</button>
+      <button data-k="direccion">Dirección</button>
+      <button data-k="especialidades">Especialidad</button>
+      <button data-k="plan">Plan</button>
+    </div>
+    <div id="listwrap">
+      <div id="list"></div>
     </div>
   </div>
 </div>
@@ -330,8 +336,9 @@ function cartilla(os) {
       // DOSUBA separates phones with "|" or ",", Unión Personal with " / " (without spaces,
       // "4201-7185/8550" is one phone with two endings).
       r.phones = r.telefonos.split(/\s*[|,]\s*|\s+\/\s+/).filter(Boolean);
+      // Phones also without dashes, to find them as typed: "49616767" or "4961-6767".
       r.text = norm([OS[os].name, r.nombre, r.direccion, r.localidad, r.tipo, r.especialidades,
-        r.telefonos, r.horario, ...r.plans].join(" "));
+        r.telefonos, r.telefonos.replaceAll("-", ""), r.horario, ...r.plans].join(" "));
       r.maps_url ||= "https://www.google.com/maps/search/?api=1&query=" +
         encodeURIComponent(`${r.direccion.split(" - ")[0]}, ${r.localidad}`);
       if (r.lat != null) {
@@ -519,15 +526,15 @@ function update(fit = false) {
   layer.clearLayers();
   for (const r of filtered) if (r.marker) layer.addLayer(r.marker);
 
-  // Fitting the map triggers moveend, which renders the table.
+  // Fitting the map triggers moveend, which renders the list.
   if (fit && circle) map.fitBounds(circle.getBounds());
-  else renderTable();
+  else renderList();
 }
 
-// The table lists only the filtered providers inside the current map view,
+// The list shows only the filtered providers inside the current map view,
 // or those without a location, to place them on the map (see startPlacing).
 let listNoGeo = false;
-function renderTable() {
+function renderList() {
   const bounds = map.getBounds();
   const out = filtered.filter((r) => listNoGeo ? !r.marker : r.marker && bounds.contains(r.marker.getLatLng()));
   const { sortK, sortDir } = state;
@@ -539,7 +546,7 @@ function renderTable() {
 
   if (!shown.length) {
     $("status").textContent = "Elegí una cartilla para ver sus prestadores.";
-    $("tb").innerHTML = "";
+    $("list").innerHTML = "";
     return;
   }
   const noGeo = filtered.filter((r) => !r.marker).length;
@@ -549,46 +556,53 @@ function renderTable() {
   $("nogeo").hidden = !noGeo;
   $("nogeo").textContent = listNoGeo ? "Volver al mapa" : `${noGeo} sin ubicar`;
 
-  $("tb").innerHTML = out.map((r) => `<tr data-i="${r.i}">
-    <td class="dist${r.dist != null ? "" : " none"}">${r.dist != null ? fmt(r.dist) : "–"}</td>
-    <td class="nombre">${esc(r.nombre)}${listNoGeo ? `<br><span class="small"><a href="#" data-place="${r.i}">Ubicar en el mapa</a> · <a href="#" data-fix="${r.i}">Corregir datos</a></span>` : ""}</td>
-    <td class="direccion">${esc(r.direccion)}<br><span class="small">${esc(r.localidad)}</span></td>
-    <td class="small esp">${esc(r.esps.join(", "))}${r.tipo ? `<br><i>${esc(r.tipo)}</i>` : ""}</td>
-    <td class="small tel">${phones(r)}${r.horario ? escTel(r.horario) : ""}</td>
-    <td class="plan">${badges(r)}</td></tr>`).join("");
-  if (selected) document.querySelector(`tr[data-i="${selected.i}"]`)?.classList.add("sel");
-  document.querySelectorAll("th").forEach((th) =>
-    th.dataset.k === sortK ? (th.dataset.dir = sortDir) : delete th.dataset.dir);
+  $("list").innerHTML = out.map(card).join("");
+  if (selected) document.querySelector(`.card[data-i="${selected.i}"]`)?.classList.add("sel");
+  document.querySelectorAll("#sort button").forEach((b) =>
+    b.dataset.k === sortK ? (b.dataset.dir = sortDir) : delete b.dataset.dir);
+}
+
+function card(r) {
+  const links = listNoGeo
+    ? `<a href="#" data-place="${r.i}">Ubicar en el mapa</a><a href="#" data-fix="${r.i}">Corregir</a>`
+    : `<a href="${esc(r.maps_url)}" target="_blank" rel="noopener">Google Maps</a><a href="#" data-fix="${r.i}">Corregir</a>`;
+  return `<article class="card os-${r.os}" data-i="${r.i}">
+    ${r.tipo ? `<div class="tipo">${esc(r.tipo)}</div>` : ""}
+    <div class="head"><h3>${esc(r.nombre)}</h3>${r.dist != null ? `<span class="dist">${fmt(r.dist)}</span>` : ""}</div>
+    ${r.esps.length ? `<div class="esp">${esc(r.esps.join(" · "))}</div>` : ""}
+    <div>${esc(r.direccion)}${r.localidad ? `<span class="loc"> · ${esc(r.localidad)}</span>` : ""}</div>
+    ${r.phones.length || r.horario ? `<div class="contact">${phones(r)}${r.horario ? `<div>${escTel(r.horario)}</div>` : ""}</div>` : ""}
+    <footer><span>${badges(r)}</span><span class="links">${links}</span></footer>
+  </article>`;
 }
 
 function showAll() {
   const pts = filtered.filter((r) => r.marker).map((r) => r.marker.getLatLng());
   if (pts.length) map.fitBounds(L.latLngBounds(pts), { padding: [20, 20], maxZoom: 16 });
 }
-map.on("moveend", renderTable);
+map.on("moveend", renderList);
 
-// Marks the provider in the table and on the map, without moving the map.
+// Marks the provider in the list and on the map, without moving the map.
 function highlight(r) {
-  document.querySelectorAll("tr.sel").forEach((t) => t.classList.remove("sel"));
-  const tr = document.querySelector(`tr[data-i="${r.i}"]`);
-  tr?.classList.add("sel");
+  document.querySelectorAll(".card.sel").forEach((c) => c.classList.remove("sel"));
+  document.querySelector(`.card[data-i="${r.i}"]`)?.classList.add("sel");
   selected?.marker?.setStyle(MARKERS[selected.os]);
   selected = r;
   r.marker?.setStyle(MARKER_SEL).bringToFront();
 }
-$("tb").onclick = (e) => {
-  const tr = e.target.closest("tr");
-  if (tr) highlight(rows[+tr.dataset.i]);
+$("list").onclick = (e) => {
+  const c = e.target.closest(".card");
+  if (c) highlight(rows[+c.dataset.i]);
 };
-document.querySelectorAll("th").forEach((th) => (th.onclick = () => {
-  const k = th.dataset.k;
+document.querySelectorAll("#sort button").forEach((b) => (b.onclick = () => {
+  const k = b.dataset.k;
   state.sortDir = state.sortK === k ? -state.sortDir : 1;
   state.sortK = k;
-  renderTable();
+  renderList();
 }));
 $("nogeo").onclick = () => {
   listNoGeo = !listNoGeo;
-  renderTable();
+  renderList();
 };
 $("toggle").onclick = () => {
   const open = $("side").classList.toggle("open");
@@ -772,7 +786,7 @@ function report(r, fields, loc, comment) {
   return { title: `Corrección: ${r.nombre} (${OS[r.os].name})`, body };
 }
 
-// Links in the popups and the table: data-fix opens the dialog, data-place the pin.
+// Links in the popups and the list: data-fix opens the dialog, data-place the pin.
 // Listened to while capturing, as Leaflet stops the clicks inside popups.
 document.addEventListener("click", (e) => {
   const a = e.target.closest?.("[data-fix], [data-place]");
