@@ -3,3 +3,6 @@
 !.pixi/config.toml
 # Built by `pixi run build`.
 dist/
+# Python
+__pycache__/
+*.py[cdo]
