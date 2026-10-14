@@ -1,0 +1,67 @@
+name: Apply a correction
+
+# Turns an issue sent from the page's correction form into a pull request adding
+# data/<cartilla>/corrections/<issue>.json (see src/correction.py), to review and merge.
+# An invalid correction gets a reply on its issue instead.
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions: {}
+
+concurrency:
+  group: correction-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  correction:
+    if: contains(github.event.issue.body, '```json')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    env:
+      ISSUE: ${{ github.event.issue.number }}
+      BRANCH: correction-${{ github.event.issue.number }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: prefix-dev/setup-pixi@9dabb60412d3d2d967a8d682f7ce01317af40514 # v0.11.0
+        with:
+          locked: true
+          environments: ci
+      - name: Check the correction
+        run: |
+          if ! pixi run -e ci python src/correction.py "$GITHUB_EVENT_PATH" 2> error.txt; then
+            cat error.txt
+            {
+              echo "No se pudo aplicar esta corrección automáticamente:"
+              echo
+              echo "> $(tail -n 1 error.txt)"
+            } > reply.md
+            gh issue comment "$ISSUE" --body-file reply.md
+          fi
+          rm -f error.txt reply.md
+      - name: Open a pull request with the correction
+        run: |
+          if [ -z "$(git status --porcelain -- data/)" ]; then
+            echo "Nothing to apply."
+            exit 0
+          fi
+          git status --short -- data/
+          gh auth setup-git
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$BRANCH"
+          git add data/
+          git commit -m "Apply the correction in #$ISSUE"
+          git push --force origin "$BRANCH"
+          if [ "$(gh pr list --head "$BRANCH" --state open --json number --jq length)" = 0 ]; then
+            gh pr create --head "$BRANCH" --title "Apply the correction in #$ISSUE" \
+              --body "Closes #$ISSUE"
+          fi

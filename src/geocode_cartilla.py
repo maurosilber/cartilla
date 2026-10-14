@@ -6,6 +6,10 @@ Results are cached in a JSON file so reruns only query new addresses.
 Addresses without a street number (0, S/N, corners) are left without
 coordinates: the middle of the street could be kilometers off.
 
+The corrections sent from the page (data/<os>/corrections/<issue>.json, written by
+correction.py) are applied first: their fields replace the cartilla's, and their
+locations replace the geocoders'.
+
 Usage: python3 geocode_cartilla.py cartilla.csv geocode_cache.json cartilla.json
 """
 
@@ -27,6 +31,7 @@ NOMINATIM = "https://nominatim.openstreetmap.org/search?{}"
 UA = "up-cartilla-map/1.0"
 CABA = {"capital federal", "ciudad autonoma de buenos aires"}
 MAX_KM = 10  # from the median of its locality, else it's a wrong match
+PROVIDER = ("nombre", "direccion", "localidad")  # what identifies a provider
 WORKERS = 4  # parallel USIG requests; Nominatim goes one at a time
 AMBA = "-59.4,-34.0,-57.7,-35.3"  # lon_min,lat_max,lon_max,lat_min
 # Abbreviations (and typos) in the source that the geocoders don't know.
@@ -151,6 +156,50 @@ def outliers(cache):
     return out
 
 
+def load_corrections(folder):
+    """The corrections in a folder, oldest issue first."""
+    files = sorted(Path(folder).glob("*.json"), key=lambda p: int(p.stem))
+    return [json.loads(p.read_text(encoding="utf-8")) for p in files]
+
+
+def provider(row):
+    return tuple(row[k] for k in PROVIDER)
+
+
+def apply_corrections(rows, corrections):
+    """Applies the corrections' fields to the rows, in place.
+
+    Returns the corrections' locations: by address key when it has a street number
+    (fixing every provider there), else by row index. Corrections whose provider
+    is no longer in the cartilla are returned apart, as stale.
+    """
+    by_provider = {}
+    for i, r in enumerate(rows):
+        by_provider.setdefault(provider(r), []).append(i)
+    by_key, by_row, stale = {}, {}, []
+    for c in corrections:
+        # A provider is named as the page showed it, i.e. after the earlier corrections.
+        idx = by_provider.pop(provider(c["provider"]), None)
+        if not idx:
+            stale.append(c)
+            continue
+        fields = c.get("fields", {})
+        for i in idx:
+            rows[i].update(fields)
+            # DOSUBA's link to Google Maps points to the old address; index.html makes one.
+            if {"direccion", "localidad"} & fields.keys() and "maps_url" in rows[i]:
+                rows[i]["maps_url"] = ""
+        r = rows[idx[0]]
+        by_provider.setdefault(provider(r), []).extend(idx)
+        if loc := c.get("location"):
+            addr = street(r["direccion"])
+            if has_number(addr):
+                by_key[f"{addr}|{r['localidad']}"] = loc
+            else:
+                by_row.update(dict.fromkeys(idx, loc))
+    return by_key, by_row, stale
+
+
 def try_(f, key):
     addr, localidad = key.split("|")
     for attempt in range(3):
@@ -167,6 +216,15 @@ def main(csv_path, cache_path, out):
     cache = json.loads(cache_path.read_text()) if cache_path.exists() else {}
     with open(csv_path, encoding="utf-8", newline="") as f:
         rows = list(csv.DictReader(f))
+    corrections = load_corrections(Path(csv_path).parent / "corrections")
+    by_key, by_row, stale = apply_corrections(rows, corrections)
+    for c in stale:
+        p = c["provider"]
+        print(
+            f"  stale correction #{c['issue']}: {p['nombre']}, {p['direccion']}, "
+            f"{p['localidad']} is no longer in the cartilla",
+            file=sys.stderr,
+        )
     keys = [f"{street(r['direccion'])}|{r['localidad']}" for r in rows]
     new = [k for k in dict.fromkeys(keys) if k not in cache]
     numbered = [k for k in new if has_number(k.split("|")[0])]
@@ -194,9 +252,11 @@ def main(csv_path, cache_path, out):
     bad = outliers(cache)
     for k in sorted(bad):
         print(f"  outlier: {k} -> {cache[k]}", file=sys.stderr)
-    for row, key in zip(rows, keys):
+    for i, (row, key) in enumerate(zip(rows, keys)):
         ok = key not in bad and has_number(key.split("|")[0])
-        lat, lon, _ = (ok and cache[key]) or (None, None, None)
+        lat, lon, *_ = (
+            by_row.get(i) or by_key.get(key) or (ok and cache[key]) or (None, None)
+        )
         row.update(lat=lat, lon=lon)
 
     for row in rows:

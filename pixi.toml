@@ -28,6 +28,7 @@ geocode-dosuba = {
     "src/geocode_cartilla.py",
     "data/dosuba/cartilla.csv",
     "data/dosuba/geocode_cache.json",
+    "data/dosuba/corrections/*.json",
   ],
   outputs = [
     "dist/dosuba.json",
@@ -39,6 +40,7 @@ geocode-unionpersonal = {
     "src/geocode_cartilla.py",
     "data/unionpersonal/cartilla.csv",
     "data/unionpersonal/geocode_cache.json",
+    "data/unionpersonal/corrections/*.json",
   ],
   outputs = [
     "dist/unionpersonal.json",

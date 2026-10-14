@@ -45,7 +45,7 @@
   label.os.loading input { appearance: none; flex: none; width: 13px; height: 13px; padding: 0; border: 2px solid var(--c); border-right-color: transparent; border-radius: 50%; background: none; animation: spin 0.7s linear infinite; }
   @keyframes spin { to { transform: rotate(1turn); } }
   label { display: flex; flex-direction: column; font-size: 12px; color: var(--muted); gap: 2px; }
-  input, select, button { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
+  input, select, button, textarea { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 5px 8px; }
   button { cursor: pointer; }
   button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
   .row { display: flex; gap: 4px; }
@@ -94,12 +94,27 @@
   .leaflet-popup-content { font-size: 13px; }
   .phone { display: block; }
   .wa { width: 1.15em; height: 1.15em; vertical-align: -0.2em; fill: #25d366; }
+  a { color: var(--accent); }
+  #statusbar button { padding: 2px 10px; font-size: 12px; }
+  /* Corrections: a bar over the map while placing a provider, and a dialog to edit its data. */
+  #mapcol { position: relative; }
+  /* Narrow enough to clear the zoom buttons. */
+  #placebar { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 1000; width: max-content; max-width: calc(100% - 120px); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 8px; background: var(--bg); border: 1px solid var(--line); box-shadow: 0 2px 10px rgb(0 0 0 / 0.2); }
+  #placetext { flex-basis: 100%; text-align: center; }
+  #fix { width: min(480px, calc(100% - 32px)); max-height: calc(100% - 32px); padding: 16px; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; }
+  #fix::backdrop { background: rgb(0 0 0 / 0.4); }
+  #fix h2 { margin: 0 0 4px; font-size: 16px; }
+  #fix form { display: flex; flex-direction: column; gap: 8px; }
+  #fix input, #fix textarea { width: 100%; }
+  #fix textarea { resize: vertical; }
+  #fix .actions { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+  #fix .actions :first-child { margin-right: auto; }
   @media (max-width: 800px) {
     /* 16px keeps iOS from zooming in when an input gets focus. */
-    body, input, select, button { font-size: 16px; }
+    body, input, select, button, textarea { font-size: 16px; }
     body { display: block; height: auto; }
     header { padding: 10px 12px; gap: 8px; }
-    input, select, button { padding: 8px 10px; }
+    input, select, button, textarea { padding: 8px 10px; }
     #toggle { display: block; flex: none; }
     #filters h2 { display: none; }
     /* The Filtros button, next to the text search, opens the plan and especialidad filters below it. */
@@ -144,6 +159,11 @@
   <div id="notice" hidden>Elegí una cartilla (DOSUBA o Unión Personal) arriba para ver sus prestadores.</div>
   <div id="mapcol">
     <div id="map"></div>
+    <div id="placebar" hidden>
+      <span id="placetext"></span>
+      <button id="placenext" class="primary" disabled>Siguiente</button>
+      <button id="placecancel">Cancelar</button>
+    </div>
     <div id="place" class="filters">
       <section id="f-place" role="group">
         <label class="wide"><span>Dirección, GPS, o clic en el mapa<span class="radius"> · hasta <span id="rv"></span></span></span>
@@ -194,6 +214,7 @@
     </div>
     <div id="statusbar">
       <span id="status"></span>
+      <button id="nogeo" hidden></button>
     </div>
     <div id="tablewrap">
       <table>
@@ -210,6 +231,25 @@
     </div>
   </div>
 </div>
+<dialog id="fix">
+  <form>
+    <h2>Corregir: <span id="fixname"></span></h2>
+    <span class="small">Cambiá lo que esté mal. Revisamos cada corrección antes de publicarla.</span>
+    <label>Dirección<input name="direccion"></label>
+    <label>Localidad<input name="localidad"></label>
+    <label>Teléfonos<input name="telefonos"></label>
+    <label>Horario<input name="horario"></label>
+    <label>Especialidades (separadas por comas)<textarea name="especialidades" rows="2"></textarea></label>
+    <label>Comentario (opcional)<textarea name="comment" rows="2" placeholder="ej. ya no atiende en esta dirección"></textarea></label>
+    <span id="fixloc" class="small"></span>
+    <span id="fixnote" class="small"></span>
+    <div class="actions">
+      <button type="button" id="fixplace">Ubicar en el mapa</button>
+      <button type="button" id="fixcancel">Cancelar</button>
+      <button type="submit" class="primary">Enviar</button>
+    </div>
+  </form>
+</dialog>
 <script>
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
@@ -390,7 +430,8 @@ function popup(r) {
   return `<b>${esc(r.nombre)}</b><br>${esc(r.direccion)}, ${esc(r.localidad)}<br>
     <span class="small">${r.tipo ? `${esc(r.tipo)} · ` : ""}${esc(r.esps.join(", "))}</span><br>${phones(r)}
     ${r.horario ? `<span class="small">${escTel(r.horario)}</span><br>` : ""}${badges(r)}<br>
-    ${r.dist != null ? `<b>${fmt(r.dist)}</b> · ` : ""}<a href="${esc(r.maps_url)}" target="_blank" rel="noopener">Google Maps</a>`;
+    ${r.dist != null ? `<b>${fmt(r.dist)}</b> · ` : ""}<a href="${esc(r.maps_url)}" target="_blank" rel="noopener">Google Maps</a><br>
+    <span class="small">¿Algo está mal? <a href="#" data-fix="${r.i}">Corregir datos</a> · <a href="#" data-place="${r.i}">Mover en el mapa</a></span>`;
 }
 
 let origin = null, originMarker = null, circle = null;
@@ -409,7 +450,7 @@ function clearOrigin() {
   $("addr").value = "";
   update();
 }
-map.on("click", (e) => setOrigin(e.latlng.lat, e.latlng.lng));
+map.on("click", (e) => (placing ? putPin(e.latlng) : setOrigin(e.latlng.lat, e.latlng.lng)));
 
 // Address search: USIG normalizer (GCBA), falling back to Nominatim (OSM)
 async function geocode(q) {
@@ -482,10 +523,12 @@ function update(fit = false) {
   else renderTable();
 }
 
-// The table lists only the filtered providers inside the current map view.
+// The table lists only the filtered providers inside the current map view,
+// or those without a location, to place them on the map (see startPlacing).
+let listNoGeo = false;
 function renderTable() {
   const bounds = map.getBounds();
-  const out = filtered.filter((r) => r.marker && bounds.contains(r.marker.getLatLng()));
+  const out = filtered.filter((r) => listNoGeo ? !r.marker : r.marker && bounds.contains(r.marker.getLatLng()));
   const { sortK, sortDir } = state;
   out.sort((a, b) => {
     const x = a[sortK], y = b[sortK];
@@ -499,12 +542,15 @@ function renderTable() {
     return;
   }
   const noGeo = filtered.filter((r) => !r.marker).length;
-  $("status").textContent = `${out.length} de ${filtered.length} en el mapa` +
-    (origin ? ` · hasta ${fmt(radiusKm())}` : "") + (noGeo ? ` · ${noGeo} sin ubicar` : "");
+  if (!noGeo) listNoGeo = false;
+  $("status").textContent = listNoGeo ? "¿Sabés dónde atienden? Ubicalos en el mapa." :
+    `${out.length} de ${filtered.length} en el mapa` + (origin ? ` · hasta ${fmt(radiusKm())}` : "");
+  $("nogeo").hidden = !noGeo;
+  $("nogeo").textContent = listNoGeo ? "Volver al mapa" : `${noGeo} sin ubicar`;
 
   $("tb").innerHTML = out.map((r) => `<tr data-i="${r.i}">
     <td class="dist${r.dist != null ? "" : " none"}">${r.dist != null ? fmt(r.dist) : "–"}</td>
-    <td class="nombre">${esc(r.nombre)}</td>
+    <td class="nombre">${esc(r.nombre)}${listNoGeo ? `<br><span class="small"><a href="#" data-place="${r.i}">Ubicar en el mapa</a> · <a href="#" data-fix="${r.i}">Corregir datos</a></span>` : ""}</td>
     <td class="direccion">${esc(r.direccion)}<br><span class="small">${esc(r.localidad)}</span></td>
     <td class="small esp">${esc(r.esps.join(", "))}${r.tipo ? `<br><i>${esc(r.tipo)}</i>` : ""}</td>
     <td class="small tel">${phones(r)}${r.horario ? escTel(r.horario) : ""}</td>
@@ -539,6 +585,10 @@ document.querySelectorAll("th").forEach((th) => (th.onclick = () => {
   state.sortK = k;
   renderTable();
 }));
+$("nogeo").onclick = () => {
+  listNoGeo = !listNoGeo;
+  renderTable();
+};
 $("toggle").onclick = () => {
   const open = $("side").classList.toggle("open");
   $("toggle").setAttribute("aria-expanded", open);
@@ -564,6 +614,118 @@ function syncResets() {
 }
 document.querySelectorAll(".filters .reset").forEach((b) => (b.onclick = RESETS[b.dataset.reset].reset));
 $("addr").addEventListener("input", syncResets);
+
+// Corrections: users can edit a provider's data and place it on the map. They are sent
+// as a GitHub issue, which correction.py turns into a pull request to review.
+const REPO = "maurosilber/cartilla";
+const FIELDS = ["direccion", "localidad", "telefonos", "horario", "especialidades"];
+let placing = null, pin = null, fixing = null;
+
+// Where a provider without a location probably is: the middle of its locality.
+function localityCenter(r) {
+  const pts = rows.filter((s) => s.marker && s.localidad === r.localidad);
+  if (!pts.length) return null;
+  const mid = (xs) => xs.sort((a, b) => a - b)[xs.length >> 1];
+  return [mid(pts.map((s) => s.lat)), mid(pts.map((s) => s.lon))];
+}
+
+// Places a provider: clicking the map or dragging the pin moves it.
+function startPlacing(r, at = null) {
+  stopPlacing();
+  placing = r;
+  map.closePopup();
+  $("placetext").innerHTML = `Tocá el mapa donde atiende <b>${esc(r.nombre)}</b>, o arrastrá el pin.`;
+  $("placebar").hidden = false;
+  const start = at ?? (r.marker ? r.marker.getLatLng() : null);
+  if (start) putPin(start);
+  const center = start ?? localityCenter(r);
+  if (center) map.setView(center, start ? 18 : 15);
+  $("map").scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+function putPin(latlng) {
+  pin ??= L.marker(latlng, { draggable: true, autoPan: true }).addTo(map);
+  pin.setLatLng(latlng);
+  $("placenext").disabled = false;
+}
+function stopPlacing() {
+  placing = null;
+  pin?.remove();
+  pin = null;
+  $("placebar").hidden = true;
+  $("placenext").disabled = true;
+}
+$("placecancel").onclick = stopPlacing;
+$("placenext").onclick = () => openFix(placing, pin.getLatLng());
+
+// The dialog to edit a provider's data, with the location chosen on the map (if any).
+function openFix(r, loc = null) {
+  fixing = { r, loc };
+  const f = $("fix").querySelector("form");
+  f.reset();
+  for (const k of FIELDS) {
+    f.elements[k].value = r[k] ?? "";
+    f.elements[k].parentElement.hidden = !(k in r);
+  }
+  $("fixname").textContent = r.nombre;
+  $("fixloc").textContent = loc ? "📍 Se enviará también la ubicación marcada en el mapa." : "";
+  $("fixplace").textContent = loc ? "Volver al mapa" : "Ubicar en el mapa";
+  $("fixnote").textContent = "Se abrirá GitHub para publicar la corrección (necesitás una cuenta).";
+  $("fix").showModal();
+}
+$("fixcancel").onclick = () => $("fix").close();
+$("fixplace").onclick = () => {
+  $("fix").close();
+  startPlacing(fixing.r, fixing.loc);
+};
+$("fix").querySelector("form").onsubmit = (e) => {
+  e.preventDefault();
+  const { r, loc } = fixing, f = e.target.elements;
+  const fields = Object.fromEntries(FIELDS.filter((k) => k in r)
+    .map((k) => [k, f[k].value.trim().replace(/\s+/g, " ")]).filter(([k, v]) => v !== r[k]));
+  const comment = f.comment.value.trim();
+  if (!loc && !Object.keys(fields).length && !comment) {
+    $("fixnote").textContent = "No cambiaste nada.";
+    return;
+  }
+  const { title, body } = report(r, fields, loc, comment);
+  window.open(`https://github.com/${REPO}/issues/new?` + new URLSearchParams({ title, body }), "_blank", "noopener");
+  $("fix").close();
+  stopPlacing();
+};
+
+// The issue: readable, ending with the JSON block that correction.py reads.
+function report(r, fields, loc, comment) {
+  const data = {
+    cartilla: r.os,
+    provider: { nombre: r.nombre, direccion: r.direccion, localidad: r.localidad },
+    ...(Object.keys(fields).length && { fields }),
+    ...(loc && { location: [+loc.lat.toFixed(6), +loc.lng.toFixed(6)] }),
+  };
+  const [lat, lon] = data.location ?? [];
+  const body = [
+    `**${r.nombre}**, ${r.direccion}, ${r.localidad} (${OS[r.os].name})`,
+    "",
+    ...Object.entries(fields).map(([k, v]) => `- ${k}: ~~${r[k] || "–"}~~ ${v || "–"}`),
+    ...(loc ? [`- ubicación: https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=18/${lat}/${lon}`] : []),
+    ...(comment ? ["", comment] : []),
+    "",
+    "```json",
+    JSON.stringify(data),
+    "```",
+  ].join("\n");
+  return { title: `Corrección: ${r.nombre} (${OS[r.os].name})`, body };
+}
+
+// Links in the popups and the table: data-fix opens the dialog, data-place the pin.
+// Listened to while capturing, as Leaflet stops the clicks inside popups.
+document.addEventListener("click", (e) => {
+  const a = e.target.closest?.("[data-fix], [data-place]");
+  if (!a) return;
+  e.preventDefault();
+  const r = rows[+(a.dataset.fix ?? a.dataset.place)];
+  if (a.dataset.fix != null) openFix(r);
+  else startPlacing(r);
+}, true);
 
 // The obra sociales shown are kept in the URL (#dosuba,unionpersonal), so links keep them.
 // None is chosen at first, so that only the cartillas the user asks for are downloaded.
