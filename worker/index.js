@@ -24,6 +24,11 @@ export default {
     if (req.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
     if (req.method !== "POST") return reply(405, { error: "método no permitido" });
     if (req.headers.get("Origin") !== env.ORIGIN) return reply(403, { error: "origen no permitido" });
+    // Before Turnstile, so that a flood doesn't reach it.
+    const ip = req.headers.get("CF-Connecting-IP") ?? "";
+    if (!(await env.LIMITER.limit({ key: ip })).success) {
+      return reply(429, { error: "enviaste otra corrección hace poco, probá de nuevo en unos segundos" });
+    }
 
     let title, body, token;
     try {
@@ -39,7 +44,6 @@ export default {
     const form = new FormData();
     form.append("secret", env.TURNSTILE_SECRET);
     form.append("response", token);
-    const ip = req.headers.get("CF-Connecting-IP");
     if (ip) form.append("remoteip", ip);
     const captcha = await (await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify",
       { method: "POST", body: form })).json();

@@ -635,7 +635,7 @@ $("addr").addEventListener("input", syncResets);
 const REPO = "maurosilber/cartilla";
 // The worker that files the issues (worker/), so that users don't need a GitHub account,
 // and its Turnstile site key. Without a URL, the page opens GitHub's form instead.
-const REPORT = { url: "", sitekey: "" };
+const REPORT = { url: "https://cartilla-corrections.maurosilber.workers.dev/", sitekey: "0x4AAAAAAFWsffrKwFNMzGgL" };
 let captcha = null;
 if (REPORT.url) {
   const s = document.head.appendChild(document.createElement("script"));

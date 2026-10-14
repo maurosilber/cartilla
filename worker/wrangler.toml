@@ -7,3 +7,9 @@ compatibility_date = "2026-10-01"
 # The page allowed to send corrections (GitHub Pages).
 ORIGIN = "https://maurosilber.github.io"
 REPO = "maurosilber/cartilla"
+
+# One correction per IP every 10 seconds. Counted per Cloudflare location, so approximate.
+[[ratelimits]]
+name = "LIMITER"
+namespace_id = "1001"  # any number, unique among this account's rate limiters
+simple = { limit = 1, period = 10 }

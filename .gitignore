@@ -6,3 +6,6 @@ dist/
 # Python
 __pycache__/
 *.py[cdo]
+
+# Wrangler's local cache (Cloudflare account).
+.wrangler/
