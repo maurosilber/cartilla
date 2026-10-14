@@ -355,7 +355,17 @@ def main(csv_path, cache_path, out):
         plan = row.pop("plan")
         r = merged.setdefault(tuple(row.values()), {**row, "plans": []})
         r["plans"].append(plan)
-    rows = list(merged.values())
+    # And once per specialty; merge rows that differ only in them. Not if the plans
+    # differ too, or a plan would get specialties it doesn't cover.
+    by_esps = {}
+    for row in merged.values():
+        esps = row.pop("especialidades").split(",")
+        key = json.dumps(row, ensure_ascii=False)
+        r = by_esps.setdefault(key, {**row, "especialidades": []})
+        r["especialidades"] += [e for e in esps if e and e not in r["especialidades"]]
+    rows = list(by_esps.values())
+    for r in rows:
+        r["especialidades"] = ",".join(sorted(r["especialidades"]))
 
     data = json.dumps(rows, ensure_ascii=False, separators=(",", ":"))
     out.parent.mkdir(parents=True, exist_ok=True)
