@@ -31,7 +31,14 @@ jobs:
         with:
           locked: true
           environments: ci
-      - run: pixi run -e ci fetch
+      # Each fetch is its own step, so one provider failing doesn't keep the
+      # other's update out of the pull request. The job still fails at the end.
+      - id: fetch-dosuba
+        continue-on-error: true
+        run: pixi run -e ci fetch-dosuba
+      - id: fetch-unionpersonal
+        continue-on-error: true
+        run: pixi run -e ci fetch-unionpersonal
       - name: Open a pull request if the cartillas changed
         env:
           GH_TOKEN: ${{ github.token }}
@@ -52,3 +59,11 @@ jobs:
             gh pr create --head "$BRANCH" --title "Update the cartillas" \
               --body "Downloaded by the scheduled \`update-data\` workflow."
           fi
+      - name: Fail if a fetch failed
+        if: steps.fetch-dosuba.outcome == 'failure' || steps.fetch-unionpersonal.outcome == 'failure'
+        env:
+          DOSUBA: ${{ steps.fetch-dosuba.outcome }}
+          UNIONPERSONAL: ${{ steps.fetch-unionpersonal.outcome }}
+        run: |
+          echo "::error::fetch-dosuba: $DOSUBA, fetch-unionpersonal: $UNIONPERSONAL"
+          exit 1
