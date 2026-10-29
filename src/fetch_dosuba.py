@@ -14,12 +14,15 @@ import math
 import re
 import sys
 import time
+import urllib.error
 import urllib.request
 
 URL = "https://cartilla.dosuba.uba.ar/_ResultadoCartilla"
 PLANES = {"1": "General", "2": "Estudiantes y Graduados"}
 PAGE_SIZE = 10
 DELAY = 0.5  # seconds between requests
+MAX_ATTEMPTS = 8
+MAX_BACKOFF = 60
 
 CARD = re.compile(r'<div class="card border-success.*?</p>', re.DOTALL)
 TOTAL = re.compile(r"Prestadores encontrados \((\d+)\)")
@@ -48,14 +51,24 @@ def fetch(plan, page):
     req = urllib.request.Request(
         URL,
         data=json.dumps(body).encode(),
-        headers={"Content-Type": "application/json"},
+        headers={
+            "Content-Type": "application/json",
+            "User-Agent": "cartilla-fetch/1.0",
+        },
     )
-    for attempt in range(3):
+    for attempt in range(MAX_ATTEMPTS):
         try:
             with urllib.request.urlopen(req, timeout=60) as r:
                 return r.read().decode("utf-8")
+        except urllib.error.HTTPError as e:
+            if e.code != 429 or attempt == MAX_ATTEMPTS - 1:
+                raise
+            wait = e.headers.get("Retry-After")
+            delay = int(wait) if wait and wait.isdigit() else min(2**attempt, MAX_BACKOFF)
+            print(f"DOSUBA 429 on page {page}; retrying in {delay}s", file=sys.stderr)
+            time.sleep(delay)
         except OSError:
-            if attempt == 2:
+            if attempt == MAX_ATTEMPTS - 1:
                 raise
             time.sleep(5)
 
