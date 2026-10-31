@@ -24,7 +24,7 @@ DELAY = 0.5  # seconds between requests
 MAX_ATTEMPTS = 8
 MAX_BACKOFF = 60
 
-CARD = re.compile(r'<div class="card border-success.*?</p>', re.DOTALL)
+CARD = re.compile(r'<div class="card[^"]*".*?</p>', re.DOTALL)
 TOTAL = re.compile(r"Prestadores encontrados \((\d+)\)")
 NAME = re.compile(r'class="card-link" href="([^"]*)"[^>]*>(.*?)</a>', re.DOTALL)
 TEL = re.compile(r'<a href="tel:[^"]*">(.*?)</a>', re.DOTALL)
@@ -64,7 +64,9 @@ def fetch(plan, page):
             if e.code != 429 or attempt == MAX_ATTEMPTS - 1:
                 raise
             wait = e.headers.get("Retry-After")
-            delay = int(wait) if wait and wait.isdigit() else min(2**attempt, MAX_BACKOFF)
+            delay = (
+                int(wait) if wait and wait.isdigit() else min(2**attempt, MAX_BACKOFF)
+            )
             print(f"DOSUBA 429 on page {page}; retrying in {delay}s", file=sys.stderr)
             time.sleep(delay)
         except OSError:
@@ -106,6 +108,9 @@ def main(out="cartilla.csv"):
 
     # By every column, so the order doesn't depend on the site's pagination.
     rows.sort(key=lambda r: (r["plan"], r["nombre"], *r.values()))
+
+    if not rows:
+        raise RuntimeError("DOSUBA parser returned no rows")
 
     with open(out, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
