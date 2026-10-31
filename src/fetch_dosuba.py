@@ -24,7 +24,7 @@ DELAY = 0.5  # seconds between requests
 MAX_ATTEMPTS = 8
 MAX_BACKOFF = 60
 
-CARD = re.compile(r'<div class="card border-success.*?</p>', re.DOTALL)
+CARD = re.compile(r'<div class="card[^"]*".*?</p>', re.DOTALL)
 TOTAL = re.compile(r"Prestadores encontrados \((\d+)\)")
 NAME = re.compile(r'class="card-link" href="([^"]*)"[^>]*>(.*?)</a>', re.DOTALL)
 TEL = re.compile(r'<a href="tel:[^"]*">(.*?)</a>', re.DOTALL)
@@ -106,6 +106,9 @@ def main(out="cartilla.csv"):
 
     # By every column, so the order doesn't depend on the site's pagination.
     rows.sort(key=lambda r: (r["plan"], r["nombre"], *r.values()))
+
+    if not rows:
+        raise RuntimeError("DOSUBA parser returned no rows")
 
     with open(out, "w", newline="", encoding="utf-8") as f:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
