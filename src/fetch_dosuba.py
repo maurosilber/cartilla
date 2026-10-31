@@ -64,7 +64,9 @@ def fetch(plan, page):
             if e.code != 429 or attempt == MAX_ATTEMPTS - 1:
                 raise
             wait = e.headers.get("Retry-After")
-            delay = int(wait) if wait and wait.isdigit() else min(2**attempt, MAX_BACKOFF)
+            delay = (
+                int(wait) if wait and wait.isdigit() else min(2**attempt, MAX_BACKOFF)
+            )
             print(f"DOSUBA 429 on page {page}; retrying in {delay}s", file=sys.stderr)
             time.sleep(delay)
         except OSError:
