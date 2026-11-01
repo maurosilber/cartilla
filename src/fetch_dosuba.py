@@ -28,6 +28,7 @@ CARD = re.compile(r'<div class="card[^"]*".*?</p>', re.DOTALL)
 TOTAL = re.compile(r"Prestadores encontrados \((\d+)\)")
 NAME = re.compile(r'class="card-link" href="([^"]*)"[^>]*>(.*?)</a>', re.DOTALL)
 TEL = re.compile(r'<a href="tel:[^"]*">(.*?)</a>', re.DOTALL)
+TITLE = re.compile(r'<h\d[^>]*class="[^"]*card-title[^"]*"[^>]*>(.*?)</h\d>', re.DOTALL)
 
 
 def field(label, card):
@@ -77,7 +78,16 @@ def fetch(plan, page):
 
 def parse(page_html):
     for card in CARD.findall(page_html):
-        maps_url, name = NAME.search(card).groups()
+        maps_url = ""
+        match = NAME.search(card)
+        if match:
+            maps_url, name = match.groups()
+        else:
+            title = TITLE.search(card)
+            if not title:
+                print("WARNING DOSUBA: skipping card without title", file=sys.stderr)
+                continue
+            name = title.group(1)
         yield {
             "nombre": clean(name),
             "direccion": field("Dirección", card),
