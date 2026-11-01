@@ -1,8 +1,9 @@
 """Download the full DOSUBA provider directory (cartilla.dosuba.uba.ar) to CSV.
 
-The site's search form validates filters only client-side; the backend
-endpoint accepts an empty query and returns every provider, paginated
-10 per page as an HTML fragment.
+The site's search form validates filters (and its reCAPTCHA) only
+client-side; the backend endpoint accepts an empty query and returns every
+provider, paginated as an HTML fragment. There is no JSON API for the results.
+The server answers HTTP 429 after about 10 requests a minute.
 
 Usage: python3 fetch_dosuba.py [output.csv]
 """
@@ -10,7 +11,6 @@ Usage: python3 fetch_dosuba.py [output.csv]
 import csv
 import html
 import json
-import math
 import re
 import sys
 import time
@@ -19,19 +19,20 @@ import urllib.request
 
 URL = "https://cartilla.dosuba.uba.ar/_ResultadoCartilla"
 PLANES = {"1": "General", "2": "Estudiantes y Graduados"}
-PAGE_SIZE = 10
-DELAY = 0.5  # seconds between requests
-MAX_ATTEMPTS = 8
-MAX_BACKOFF = 60
+DELAY = 6  # seconds between requests, to stay under the rate limit
+RATE_LIMIT_WAIT = 60  # seconds to wait after an HTTP 429
 
-CARD = re.compile(r'<div class="card[^"]*".*?</p>', re.DOTALL)
+CARD = re.compile(r'<div class="card border-light.*?</p>', re.DOTALL)
 TOTAL = re.compile(r"Prestadores encontrados \((\d+)\)")
-NAME = re.compile(r'class="card-link" href="([^"]*)"[^>]*>(.*?)</a>', re.DOTALL)
-TEL = re.compile(r'<a href="tel:[^"]*">(.*?)</a>', re.DOTALL)
+LAST_PAGE = re.compile(r"Busqueda\((\d+),")
+NAME = re.compile(
+    r'<a [^>]*href="(https://www\.google\.com/maps[^"]*)"[^>]*>(.*?)</a>', re.DOTALL
+)
+TEL = re.compile(r'<a href="tel:[^"]*"[^>]*>(.*?)</a>', re.DOTALL)
 
 
 def field(label, card):
-    m = re.search(rf"<b>{label}:</b>(.*?)<br", card, re.DOTALL)
+    m = re.search(rf"<b>{label}:</b>(.*?)(?:<br|</p>)", card, re.DOTALL)
     return clean(m.group(1)) if m else ""
 
 
@@ -56,30 +57,25 @@ def fetch(plan, page):
             "User-Agent": "cartilla-fetch/1.0",
         },
     )
-    for attempt in range(MAX_ATTEMPTS):
+    for attempt in range(5):
         try:
             with urllib.request.urlopen(req, timeout=60) as r:
                 return r.read().decode("utf-8")
-        except urllib.error.HTTPError as e:
-            if e.code != 429 or attempt == MAX_ATTEMPTS - 1:
+        except OSError as e:
+            if attempt == 4:
                 raise
-            wait = e.headers.get("Retry-After")
-            delay = (
-                int(wait) if wait and wait.isdigit() else min(2**attempt, MAX_BACKOFF)
-            )
-            print(f"DOSUBA 429 on page {page}; retrying in {delay}s", file=sys.stderr)
-            time.sleep(delay)
-        except OSError:
-            if attempt == MAX_ATTEMPTS - 1:
-                raise
-            time.sleep(5)
+            if isinstance(e, urllib.error.HTTPError) and e.code == 429:
+                print(f"Rate limited, waiting {RATE_LIMIT_WAIT}s", file=sys.stderr)
+                time.sleep(RATE_LIMIT_WAIT)
+            else:
+                time.sleep(5)
 
 
 def parse(page_html):
     for card in CARD.findall(page_html):
         maps_url, name = NAME.search(card).groups()
         yield {
-            "nombre": clean(name),
+            "nombre": clean(name).removeprefix("📍").strip(),
             "direccion": field("Dirección", card),
             "localidad": field("Localidad", card),
             "telefonos": " | ".join(clean(t) for t in TEL.findall(card) if clean(t)),
@@ -93,7 +89,9 @@ def main(out="cartilla.csv"):
     for plan, plan_name in PLANES.items():
         first = fetch(plan, 1)
         total = int(TOTAL.search(first).group(1))
-        n_pages = math.ceil(total / PAGE_SIZE)
+        # The page size isn't part of the response, so take the last page
+        # from the pagination links (absent when there's a single page).
+        n_pages = max((int(n) for n in LAST_PAGE.findall(first)), default=1)
         plan_rows = list(parse(first))
         for page in range(2, n_pages + 1):
             time.sleep(DELAY)
