@@ -65,3 +65,10 @@ jobs:
             gh pr create --head "$BRANCH" --title "Apply the correction in #$ISSUE" \
               --body "Closes #$ISSUE"
           fi
+      - name: Enable automerge
+        run: |
+          if [ "$(gh pr list --head "$BRANCH" --state open --json number --jq length)" = 0 ]; then
+            echo "No pull request to merge."
+            exit 0
+          fi
+          gh pr merge "$BRANCH" --auto --squash
