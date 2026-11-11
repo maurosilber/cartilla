@@ -67,3 +67,12 @@ jobs:
         run: |
           echo "::error::fetch-dosuba: $DOSUBA, fetch-unionpersonal: $UNIONPERSONAL"
           exit 1
+      - name: Enable automerge
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$(gh pr list --head "$BRANCH" --state open --json number --jq length)" = 0 ]; then
+            echo "No pull request to merge."
+            exit 0
+          fi
+          gh pr merge "$BRANCH" --auto --squash
