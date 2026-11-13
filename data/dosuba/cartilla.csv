@@ -1,8 +1,6 @@
 plan,nombre,direccion,localidad,telefonos,especialidades,maps_url
 Estudiantes y Graduados,Abbate Marcelo,Paraguay 305,Garin,03484-471322 / 15-3298-9401 whattsap | 15-3971-7295,"Cirugia Odontologica,Endodoncia,Odontologia General,Odontopediatria,Periodoncia",https://www.google.com/maps/search/Paraguay+305+Garin
 Estudiantes y Graduados,Abbate Marcelo,Presidente 869,Garin,03484-471322 / 15-3298-9401 whattsap | 15-3971-7295,"Cirugia Odontologica,Endodoncia,Odontologia General,Odontopediatria,Periodoncia",https://www.google.com/maps/search/Presidente+869+Garin
-Estudiantes y Graduados,Aguirre Cecilia,Av. Juan De Garay 2955,Olivos,47972198,Clinica Medica,https://www.google.com/maps/search/Av. Juan De Garay+2955+Olivos
-Estudiantes y Graduados,Alberro Georgina Araceli,Vidt 2198 - 2 E,Capital Federal,1159901158,Nutricion,https://www.google.com/maps/search/Vidt+2198+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Alegre Fernando Ariel,Pichincha 885,Capital Federal,4827-5548 | 4942-9848 | 15-4173-6006,"Endodoncia,Odontologia General",https://www.google.com/maps/search/Pichincha+885+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Allami Dolinda,Larrea 1007 - 7 C,Capital Federal,4828-0506,Odontologia General,https://www.google.com/maps/search/Larrea+1007+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Allevato Adrian David,Monseñor Marcon 2,San Justo,4482-2546,"Cirugia Odontologica,Endodoncia,Odontologia General,Periodoncia",https://www.google.com/maps/search/Monseñor Marcon+2+San Justo
@@ -20,7 +18,6 @@ Estudiantes y Graduados,Bilbao Maria Marta - Centro De Referencia Cereme,Av. Pue
 Estudiantes y Graduados,Boniardi Estela Sandra,Angel 1676 - 1,San Miguel,4667-1121,Odontologia General,https://www.google.com/maps/search/Angel+1676+San Miguel
 Estudiantes y Graduados,Bravo Julio E.,Lebensohn 707,Avellaneda,4222-4520,"Endodoncia,Odontologia General",https://www.google.com/maps/search/Lebensohn+707+Avellaneda
 Estudiantes y Graduados,Brignoli Araceli,Garzon 807,Monte Grande,4281-3690,Odontologia General,https://www.google.com/maps/search/Garzon+807+Monte Grande
-Estudiantes y Graduados,Butorac Carlos - Caballito,Av. Rivadavia 5012 - 4,Capital Federal,4902-6816,Obstetricia,https://www.google.com/maps/search/Av. Rivadavia+5012+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Calderon Gonzalo,Calle 43 845,La Plata,0221-15-5949259 whattsapp,"Cirugia Odontologica,Endodoncia,Odontologia General,Periodoncia",https://www.google.com/maps/search/Calle 43+845+La Plata
 Estudiantes y Graduados,Camagni Guerci Julia,Alberdi 1486,Olivos,4841-8014,"Cirugia Odontologica,Odontologia General,Odontopediatria,Periodoncia",https://www.google.com/maps/search/Alberdi+1486+Olivos
 Estudiantes y Graduados,Capurro Fabiana,Paunero 1371,San Miguel,1546737608,Odontologia General,https://www.google.com/maps/search/Paunero+1371+San Miguel
@@ -107,7 +104,6 @@ Estudiantes y Graduados,Gigliotti Silvia Mabel,Zufriategui 730 - 1,Ituzaingo,15-
 Estudiantes y Graduados,Gil Lidia - Centro De Referencia Cereme,Av. Pueyrredon 1504 - 8 2,Capital Federal,4827-4766 | 4827-5136,Clinica Medica,https://www.google.com/maps/search/Av. Pueyrredon+1504+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Gindin Adrian Dario,Sarmiento 1874 - PB C,Capital Federal,43742699,"Clinica Medica,Pediatria",https://www.google.com/maps/search/Sarmiento+1874+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Gomez Haydee,Av. Forest 1519 - C,Capital Federal,4555-7240 | 15-6368-8571,Odontologia General,https://www.google.com/maps/search/Av. Forest+1519+Cdad.+Autónoma+de+Buenos+Aires
-Estudiantes y Graduados,Gordin Pablo Benito,Av. Estado De Israel 4354 - 10 A,Capital Federal,48618247 | 48622388,"Ginecologia,Obstetricia,Tocoginecologia",https://www.google.com/maps/search/Av. Estado De Israel+4354+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Grinstein Anahi - Centro De Referencia Cereme,Av. Pueyrredon 1504 - 8 2,Capital Federal,4827-4766 | 4827-5136,Ginecologia,https://www.google.com/maps/search/Av. Pueyrredon+1504+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Guerci Rosalia,Av Maipu 3087 - 1 B,Olivos,4790-4513 | 4790-4992,"Endodoncia,Odontologia General",https://www.google.com/maps/search/Av Maipu+3087+Olivos
 Estudiantes y Graduados,Guichou Daniel,Calle 54 436,La Plata,0221-4835453 | 0221-5608355,Odontologia General,https://www.google.com/maps/search/Calle 54+436+La Plata
@@ -132,7 +128,6 @@ Estudiantes y Graduados,Investigaciones Medicas S.A,Viamonte 1871,Capital Federa
 Estudiantes y Graduados,Investigaciones Vasculares S.A,Av. Patricias Argentinas 351,Capital Federal,48662895 | 2896,"Cirugia Cardiovascular,Diagnostico Y Tratamiento,Hemodinamia",https://www.google.com/maps/search/Av. Patricias Argentinas+351+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Ivaldi Virginia Beatriz,Martin Y Omar 31 - 1 C,San Isidro,4747-8377,Odontologia General,https://www.google.com/maps/search/Martin Y Omar+31+San Isidro
 Estudiantes y Graduados,Izsak Miriam,Bolivar 1303,Hurlingham,4665-0055,"Endodoncia,Odontologia General,Periodoncia",https://www.google.com/maps/search/Bolivar+1303+Hurlingham
-Estudiantes y Graduados,Jaimovich Jorge Alejandro Issac,Bynnon 2302,Adrogue,42940235,"Clinica Medica,Pediatria",https://www.google.com/maps/search/Bynnon+2302+Adrogue
 Estudiantes y Graduados,Jares Edgardo,Rivadavia 14276,Ramos Mejia,4469-6900 | 4469-6950,"Alergia,Inmunologia",https://www.google.com/maps/search/Rivadavia+14276+Ramos Mejia
 Estudiantes y Graduados,Jares Edgardo,Sucre 2486 - 2 D,Capital Federal,4787-1946,"Alergia,Inmunologia",https://www.google.com/maps/search/Sucre+2486+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Juarez Matorras Edith Y Equip,La Pampa 2132 - PB G,Capital Federal,4788-4167,"Endodoncia,Odontologia General,Odontopediatria",https://www.google.com/maps/search/La Pampa+2132+Cdad.+Autónoma+de+Buenos+Aires
@@ -187,7 +182,6 @@ Estudiantes y Graduados,Renversade Patricia,Ramon Falcon 6355 - PB,Capital Feder
 Estudiantes y Graduados,Resonancia Por Imagenes S.A.,Pichincha 69,Capital Federal,49522800,Diagnostico Y Tratamiento,https://www.google.com/maps/search/Pichincha+69+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Rico Nora Haydee,Julian Alvarez 2010 - 4 B,Capital Federal,48259053,Discapacidad,https://www.google.com/maps/search/Julian Alvarez+2010+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Rives Luis Eduardo,Av. Santa Fe 2036 - 2 A,Capital Federal,48212719 | 48257601,Patologia Mamaria,https://www.google.com/maps/search/Av. Santa Fe+2036+Cdad.+Autónoma+de+Buenos+Aires
-Estudiantes y Graduados,Rocco Guillermo Oscar,Hipolito Yrigoyen 10876,Lomas De Zamora,1549603278 | 42316182,Pediatria,https://www.google.com/maps/search/Hipolito Yrigoyen+10876+Lomas De Zamora
 Estudiantes y Graduados,Rodriguez Cortes Enrique Guil,Juramento 2715 - 1 G,Capital Federal,4783-8360,"Endodoncia,Odontologia General",https://www.google.com/maps/search/Juramento+2715+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Rodriguez Garcia Maria Natalia,Yerbal 592 - 3 7,Capital Federal,4902-5196,"Endodoncia,Odontologia General,Odontopediatria",https://www.google.com/maps/search/Yerbal+592+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Roenthal Inst. Radiologico,Av. Avellaneda 172,Bernal,4225-6800/4247-6404 | 4225-6800/4247-6404 | 4225-6800/4247-6404 | 4225-6800/4247-6404 | 4225-6800/4247-6404,Radiologia,https://www.google.com/maps/search/Av. Avellaneda+172+Bernal
@@ -209,7 +203,6 @@ Estudiantes y Graduados,Saullo Martin Gabriel,Riobamba 340 - 5 B,Capital Federal
 Estudiantes y Graduados,Scorticati Maria Esperanza,Paraguay 2342 - 17 A,Capital Federal,49630987 | 49636346,"Ginecologia,Tocoginecologia",https://www.google.com/maps/search/Paraguay+2342+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Serantes Adriana,España 10 - 1 D,Tigre,4731-9369,"Endodoncia,Odontologia General",https://www.google.com/maps/search/España+10+Tigre
 Estudiantes y Graduados,Sernani Liliana,Av. Rivadavia 13 - A,Ramos Mejia,4656-7214 | 4469-0916,"Cirugia Odontologica,Odontologia General",https://www.google.com/maps/search/Av. Rivadavia+13+Ramos Mejia
-Estudiantes y Graduados,Siufi Federico Hernan,Luis Viale 2259,Capital Federal,45811001,Pediatria,https://www.google.com/maps/search/Luis Viale+2259+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Snaidas Lazaro,Av. Santa Fe 1955 - 1 E,Capital Federal,4812-5957 | 4816-0633,Ginecologia,https://www.google.com/maps/search/Av. Santa Fe+1955+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Soltz Gustavo Pablo,Almafuerte 3351 - 2 F,San Justo,4484-8499,Odontologia General,https://www.google.com/maps/search/Almafuerte+3351+San Justo
 Estudiantes y Graduados,Stola Monica Edit,Bahia Blanca 1195,Capital Federal,4671-4779,"Odontologia General,Odontopediatria,Periodoncia",https://www.google.com/maps/search/Bahia Blanca+1195+Cdad.+Autónoma+de+Buenos+Aires
@@ -217,22 +210,17 @@ Estudiantes y Graduados,Straminsky Vanesa - Belgrano,"O""Higgins 2062 - 5",Capit
 Estudiantes y Graduados,Surdo Patricia,Pco.Rodriguez 4644 - 5 A,Villa Ballester,4738-9573 | 15-3336-8284,"Cirugia Odontologica,Odontologia General,Odontopediatria",https://www.google.com/maps/search/Pco.Rodriguez+4644+Villa Ballester
 Estudiantes y Graduados,Underner Sebastian Andres,Panamericana Km 54.5 Pilar Office - 3 10,Pilar,0230-437-4066 | 15-2754-8709,"Cirugia Odontologica,Endodoncia,Odontologia General,Odontopediatria,Periodoncia",https://www.google.com/maps/search/Panamericana Km 54.5 Pilar Office++Pilar
 Estudiantes y Graduados,Valverde Carlos Gaston,Mansilla 4093 - PB,Capital Federal,1157270704,Oftalmologia,https://www.google.com/maps/search/Mansilla+4093+Cdad.+Autónoma+de+Buenos+Aires
-Estudiantes y Graduados,Vazquez Andres Martin,Larrea 1147 - 4 B,Capital Federal,46015711 | 48230780,"Andrologia,Urologia",https://www.google.com/maps/search/Larrea+1147+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Vazquez Matias Ariel Y Equipo,Calle 141 2388,Berazategui,4216-4005,"Cirugia Odontologica,Endodoncia,Odontologia General,Odontopediatria,Periodoncia",https://www.google.com/maps/search/Calle 141+2388+Berazategui
-Estudiantes y Graduados,Velazquez Humberto,Av. Rivadavia 5748 - PB B,Capital Federal,44311561,Obstetricia,https://www.google.com/maps/search/Av. Rivadavia+5748+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Vescovo Virginia,Almafuerte 2560 - 1 2,Castelar,6073-7413 | 15-4569-2057,Odontologia General,https://www.google.com/maps/search/Almafuerte+2560+Castelar
 Estudiantes y Graduados,Vior Maria Martha,Calle 119 162,La Plata,0221-4829164,"Odontologia General,Odontopediatria",https://www.google.com/maps/search/Calle 119+162+La Plata
 Estudiantes y Graduados,Vulcano Gabriela Mara Y Equipo,Gral. Paz 771,Quilmes Este,15-2536-9130,"Cirugia Odontologica,Odontologia General,Odontopediatria,Periodoncia,Urgencias Odontologicas",https://www.google.com/maps/search/Gral. Paz+771+Quilmes Este
 Estudiantes y Graduados,Wischñevsky Melina,Ventana 3892 - 1 16,Capital Federal,4911-9594,"Cirugia Odontologica,Endodoncia,Odontologia General,Odontopediatria",https://www.google.com/maps/search/Ventana+3892+Cdad.+Autónoma+de+Buenos+Aires
 Estudiantes y Graduados,Yoshida Sebastian,Av. Calchaqui 584,Berazategui,4275-6975,"Odontologia General,Odontopediatria",https://www.google.com/maps/search/Av. Calchaqui+584+Berazategui
 Estudiantes y Graduados,Zager Gustavo,Matheu 1961,Boulogne Sur Mer,4737-5425,"Endodoncia,Odontologia General,Odontopediatria",https://www.google.com/maps/search/Matheu+1961+Boulogne Sur Mer
-Estudiantes y Graduados,Zaidenvoren Gabriel Alejandro,Av. Corrientes 4081 - 2 B,Capital Federal,48647883 | 48653778,"Ginecologia,Obstetricia,Tocoginecologia",https://www.google.com/maps/search/Av. Corrientes+4081+Cdad.+Autónoma+de+Buenos+Aires
 General,Abbate Marcelo,Paraguay 305,Garin,03484-471322 / 15-3298-9401 whattsap | 15-3971-7295,"Cirugia Odontologica,Endodoncia,Odontologia General,Odontopediatria,Periodoncia",https://www.google.com/maps/search/Paraguay+305+Garin
 General,Abbate Marcelo,Presidente 869,Garin,03484-471322 / 15-3298-9401 whattsap | 15-3971-7295,"Cirugia Odontologica,Endodoncia,Odontologia General,Odontopediatria,Periodoncia",https://www.google.com/maps/search/Presidente+869+Garin
 General,Aced - Alta Calidad Endoscopica Digestiva,Sarmiento 3219 - PB,Capital Federal,48613198 | 48614999 | 48615200,Gastroenterologia,https://www.google.com/maps/search/Sarmiento+3219+Cdad.+Autónoma+de+Buenos+Aires
 General,Adrogue Juan Martin,Juncal 2951 - 1 A,Capital Federal,1163306332 | 48218019 | 48221993,Oftalmologia,https://www.google.com/maps/search/Juncal+2951+Cdad.+Autónoma+de+Buenos+Aires
-General,Aguirre Cecilia,Av. Juan De Garay 2955,Olivos,47972198,Clinica Medica,https://www.google.com/maps/search/Av. Juan De Garay+2955+Olivos
-General,Alberro Georgina Araceli,Vidt 2198 - 2 E,Capital Federal,1159901158,Nutricion,https://www.google.com/maps/search/Vidt+2198+Cdad.+Autónoma+de+Buenos+Aires
 General,Albrizio Mariana,Paraguay 1896 - 3,Capital Federal,48223473,"Ginecologia,Tocoginecologia",https://www.google.com/maps/search/Paraguay+1896+Cdad.+Autónoma+de+Buenos+Aires
 General,Alegre Fernando Ariel,Pichincha 885,Capital Federal,4827-5548 | 4942-9848 | 15-4173-6006,"Endodoncia,Odontologia General",https://www.google.com/maps/search/Pichincha+885+Cdad.+Autónoma+de+Buenos+Aires
 General,Allami Dolinda,Larrea 1007 - 7 C,Capital Federal,4828-0506,Odontologia General,https://www.google.com/maps/search/Larrea+1007+Cdad.+Autónoma+de+Buenos+Aires
@@ -241,7 +229,6 @@ General,Alonso Daniela Silvana Veronica,Pedro Calderón De La Barca 2701 - PB 1,
 General,Altamira Angel Ernesto,Vuelta De Obligado 2632 - 7 B,Capital Federal,47853514,Clinica Medica,https://www.google.com/maps/search/Vuelta De Obligado+2632+Cdad.+Autónoma+de+Buenos+Aires
 General,Alzugaray Viviana,Mitre 95 95 - 1 B,Florencio Varela,4287-7449,Odontologia General,https://www.google.com/maps/search/Mitre 95+95+Florencio Varela
 General,Andoniades Osvaldo Ramon 1,Av. Cabildo 1406 - 10 C,Capital Federal,11-5038-5399,Flebologia,https://www.google.com/maps/search/Av. Cabildo+1406+Cdad.+Autónoma+de+Buenos+Aires
-General,Aragon Alba Agustina,Junin 340 - 2 A,Capital Federal,49533242,Dermatologia,https://www.google.com/maps/search/Junin+340+Cdad.+Autónoma+de+Buenos+Aires
 General,Araujo Maria Luisa,Riobamba 340 - 5 B,Capital Federal,4952-1546 | 4372-7766,"Endodoncia,Odontologia General",https://www.google.com/maps/search/Riobamba+340+Cdad.+Autónoma+de+Buenos+Aires
 General,Arce Mauro Andres,Avda. Velez Sarfield 96 - 1 B,Martinez,02317-15453575,"Cirugia Odontologica,Endodoncia,Odontologia General",https://www.google.com/maps/search/Avda. Velez Sarfield+96+Martinez
 General,Argonz Joaquin - Capital Federal,Riobamba 588 - 2 B,Capital Federal,1145789543 | 47404416 | 48069106,"Diabetologia,Endocrinologia,Nutricion",https://www.google.com/maps/search/Riobamba+588+Cdad.+Autónoma+de+Buenos+Aires
@@ -264,8 +251,6 @@ General,Bio Diagnostico Lopardo Repetto S.R.L,Dean Funes 1629 - PB,Capital Feder
 General,Boniardi Estela Sandra,Angel 1676 - 1,San Miguel,4667-1121,Odontologia General,https://www.google.com/maps/search/Angel+1676+San Miguel
 General,Bravo Julio E.,Lebensohn 707,Avellaneda,4222-4520,"Endodoncia,Odontologia General",https://www.google.com/maps/search/Lebensohn+707+Avellaneda
 General,Brignoli Araceli,Garzon 807,Monte Grande,4281-3690,Odontologia General,https://www.google.com/maps/search/Garzon+807+Monte Grande
-General,Bumaschny Eduardo,Marcelo T. De Alvear 1241 - PB,Capital Federal,48160035,"Cirugia General,Coloproctologia",https://www.google.com/maps/search/Marcelo T. De Alvear+1241+Cdad.+Autónoma+de+Buenos+Aires
-General,Butorac Carlos - Caballito,Av. Rivadavia 5012 - 4,Capital Federal,4902-6816,Obstetricia,https://www.google.com/maps/search/Av. Rivadavia+5012+Cdad.+Autónoma+de+Buenos+Aires
 General,Cagnacci Leticia,Echeverria 2680 - 1 C,Capital Federal,4784-0289 | 15-2513-1980,Podologia,https://www.google.com/maps/search/Echeverria+2680+Cdad.+Autónoma+de+Buenos+Aires
 General,Calderon Gonzalo,Calle 43 845,La Plata,0221-15-5949259 whattsapp,"Cirugia Odontologica,Endodoncia,Odontologia General,Periodoncia",https://www.google.com/maps/search/Calle 43+845+La Plata
 General,Camagni Guerci Julia,Alberdi 1486,Olivos,4841-8014,"Cirugia Odontologica,Odontologia General,Odontopediatria,Periodoncia",https://www.google.com/maps/search/Alberdi+1486+Olivos
@@ -276,7 +261,6 @@ General,Cardio Diagnostico Ba,Riobamba 429 - PB 1103,Capital Federal,11-5245-428
 General,Cariola Luis Ruben,Ciudad De La Paz 1948 - PB B,Capital Federal,4782-1627 | 4896-0746 | 11-4410-5934,Traumatologia Y Ortopedia,https://www.google.com/maps/search/Ciudad De La Paz+1948+Cdad.+Autónoma+de+Buenos+Aires
 General,Carnio Graciela,Av. Pueyrredon 1504 - 8 2,Capital Federal,4827-4766 | 4827-5136,Clinica Medica,https://www.google.com/maps/search/Av. Pueyrredon+1504+Cdad.+Autónoma+de+Buenos+Aires
 General,Carnio Graciela,Av. Rivadavia 5170 - 6 B,Capital Federal,4902-9420 | 4903-4149,"Clinica Medica,Gastroenterologia,Nutricion",https://www.google.com/maps/search/Av. Rivadavia+5170+Cdad.+Autónoma+de+Buenos+Aires
-General,Castaño Leandro,Junin 1361 - PB 2,Capital Federal,4806-9568,Endocrinologia,https://www.google.com/maps/search/Junin+1361+Cdad.+Autónoma+de+Buenos+Aires
 General,Celso Carlos Alberto,Estomba 2516,Capital Federal,45433092,Clinica Medica,https://www.google.com/maps/search/Estomba+2516+Cdad.+Autónoma+de+Buenos+Aires
 General,Cemair - Sanatorio Itoiz,Alsina 174,Avellaneda,0810-222-4864 | 4001-0700,"Analisis Clinicos,Cirugia General,Clinica - Sanatorio - Instituto,Clinica Medica,Internacion Generales,Urgencias 24 Hs",https://www.google.com/maps/search/Alsina+174+Avellaneda
 General,Cemic - 3 De Febrero,3 De Febrero 2120,Capital Federal,52990000,"Analisis Clinicos,Anatomia Patologica,Cardiologia,Cardiologia Pediatrica,Cirugia Cardiovascular,Cirugia Cardiovascular Pediatrica,Cirugia Toraxica,Clinica - Sanatorio - Instituto,Clinica Medica,Diagnostico Y Tratamiento,Fonoaudiologia,Ginecologia,Hemodialisis-Dialisis Renal,Hemoterapia,Internacion Generales,Medicina Fisica/Rehabilitacion,Medicina Nuclear,Pediatria,Radiologia,Urologia",https://www.google.com/maps/search/3 De Febrero+2120+Cdad.+Autónoma+de+Buenos+Aires
@@ -315,10 +299,7 @@ General,Comparato Claudio Gabriel,San Luis 2740,Capital Federal,49619105 | 49633
 General,Consulmed Emprendimientos Odontologicos,Ayacucho 1314 - 1,Capital Federal,52174400,"Cirugia Odontologica,Odontologia General,Odontopediatria,Urgencias 24 Hs",https://www.google.com/maps/search/Ayacucho+1314+Cdad.+Autónoma+de+Buenos+Aires
 General,Consultorio,Av.Pueyrredon 1770 - 2 A,Capital Federal,41974608,"Cirugia De Columna,Traumatologia Y Ortopedia",https://www.google.com/maps/search/Av.Pueyrredon+1770+Cdad.+Autónoma+de+Buenos+Aires
 General,Consultorio,La Madrid 2741,Capital Federal,NULL,Traumatologia Y Ortopedia,https://www.google.com/maps/search/La Madrid+2741+Cdad.+Autónoma+de+Buenos+Aires
-General,Consultorio,Mansilla 2870 - 2 B,Capital Federal,4962-0289,Clinica Medica,https://www.google.com/maps/search/Mansilla+2870+Cdad.+Autónoma+de+Buenos+Aires
-General,Consultorio,Mansilla 2870 - 2 B,Capital Federal,4962-0289,Endocrinologia,https://www.google.com/maps/search/Mansilla+2870+Cdad.+Autónoma+de+Buenos+Aires
 General,Consultorio,Mansilla 2870 - 2 B,Capital Federal,4962-0289,"Endocrinologia,Ginecologia",https://www.google.com/maps/search/Mansilla+2870+Cdad.+Autónoma+de+Buenos+Aires
-General,Consultorio,Mansilla 2870 - 2 B,Capital Federal,4962-0289,Gerontologia,https://www.google.com/maps/search/Mansilla+2870+Cdad.+Autónoma+de+Buenos+Aires
 General,Consultorio,Mansilla 2870 - 2 B,Capital Federal,4962-0289,Reumatologia,https://www.google.com/maps/search/Mansilla+2870+Cdad.+Autónoma+de+Buenos+Aires
 General,Consultorio 1,Av. Rivadavia 6044,Capital Federal,51996676 | 1151028780,"Diagnostico Por Imagenes,Mamografia,Radiologia",https://www.google.com/maps/search/Av. Rivadavia+6044+Cdad.+Autónoma+de+Buenos+Aires
 General,Consultorio 2,Austria 2012,Capital Federal,51996676 | 1151028780,Radiologia,https://www.google.com/maps/search/Austria+2012+Cdad.+Autónoma+de+Buenos+Aires
@@ -356,7 +337,6 @@ General,Dialitys S.A.,Av. Congreso 5045,Capital Federal,45461999,Hemodialisis-Di
 General,Diaz Lili Beatriz,Gallo 1518 - PB 2,Capital Federal,48265040,Anatomia Patologica,https://www.google.com/maps/search/Gallo+1518+Cdad.+Autónoma+de+Buenos+Aires
 General,Diaz Patricia Fabiana Y Equipo,Av. Rivadavia 15882,Haedo,15-6554-8669 | 4256-1700,"Cirugia Odontologica,Endodoncia,Odontologia General",https://www.google.com/maps/search/Av. Rivadavia+15882+Haedo
 General,Diaz Patricia Fabiana Y Equipo,Calle 150 1450,Haedo,15-6554-8669 | 4256-1700,"Cirugia Odontologica,Endodoncia,Odontologia General",https://www.google.com/maps/search/Calle 150+1450+Haedo
-General,Doldan Mariel - Capital Federal,Junin 340 - 2 A,Capital Federal,4953-3242,Dermatologia,https://www.google.com/maps/search/Junin+340+Cdad.+Autónoma+de+Buenos+Aires
 General,Dorronsoro Ignacio Mario,Av. Del Caminante 20 - 3 301,Capital Federal,4787-0520 /15-2597-1000 | 4871-4871/15-2597-1000,"Endodoncia,Odontologia General,Periodoncia",https://www.google.com/maps/search/Av. Del Caminante+20+Cdad.+Autónoma+de+Buenos+Aires
 General,Dorronsoro Ignacio Mario,Virrey Del Pino 2461 - 6 E,Capital Federal,4787-0520 /15-2597-1000 | 4871-4871/15-2597-1000,"Endodoncia,Odontologia General,Periodoncia",https://www.google.com/maps/search/Virrey Del Pino+2461+Cdad.+Autónoma+de+Buenos+Aires
 General,Dr. Sananes,Larrea 1257 - 2 B,Capital Federal,4822-4654,Ginecologia,https://www.google.com/maps/search/Larrea+1257+Cdad.+Autónoma+de+Buenos+Aires
@@ -374,8 +354,6 @@ General,Exea,Niceto Vega 4719 - PB,Capital Federal,5263-7407 | 11-6276-0384,Clin
 General,Facultad De Farmacia Y Bioquimica,Av. Córdoba 2351 - 1,Capital Federal,49508684 | 8685,Analisis Clinicos,https://www.google.com/maps/search/Av. Córdoba+2351+Cdad.+Autónoma+de+Buenos+Aires
 General,Feldman Stemberg Carlos G,Sarmiento 56 - 3 4,Avellaneda,4222-1204,Odontologia General,https://www.google.com/maps/search/Sarmiento+56+Avellaneda
 General,Fernandez Eloy,Av. Rivadavia 4990 - 8 B,Capital Federal,4902-9835 | 4904-1052,Clinica Medica,https://www.google.com/maps/search/Av. Rivadavia+4990+Cdad.+Autónoma+de+Buenos+Aires
-General,Ferrari Maria De Los Angeles,Suarez 1632 - PB B,Capital Federal,47781335,Clinica Medica,https://www.google.com/maps/search/Suarez+1632+Cdad.+Autónoma+de+Buenos+Aires
-General,Ferrari Nicolas,Av. Cabildo 2327 - 3 C,Capital Federal,52632769,Tocoginecologia,https://www.google.com/maps/search/Av. Cabildo+2327+Cdad.+Autónoma+de+Buenos+Aires
 General,Fijtman Gabriela,Rosales 380,Ramos Mejia,4469-0256,Radiologia,https://www.google.com/maps/search/Rosales+380+Ramos Mejia
 General,Fresenius - Caba,Elias Galvan 4102,Capital Federal,45472557 | 45472747/48,Hemodialisis-Dialisis Renal,https://www.google.com/maps/search/Elias Galvan+4102+Cdad.+Autónoma+de+Buenos+Aires
 General,Fresenius - Caba 2,Gral. Lucio Mansilla 3141,Capital Federal,48256162 | 0161,Hemodialisis-Dialisis Renal,https://www.google.com/maps/search/Gral. Lucio Mansilla+3141+Cdad.+Autónoma+de+Buenos+Aires
@@ -411,7 +389,6 @@ General,Furman Marcelo Gabriel,Madero 1047,San Fernando,4744-0949,Odontologia Ge
 General,Gaffuri Nestor Jorge,Lavalle 2763 - 1 A,Villa Ballester,4764-0741 | 15-6272-5570,"Odontologia General,Periodoncia",https://www.google.com/maps/search/Lavalle+2763+Villa Ballester
 General,Galina Hugo Ernesto,Virrey Loreto 2443 - PB D,Capital Federal,4785-3466,Cirugia Odontologica,https://www.google.com/maps/search/Virrey Loreto+2443+Cdad.+Autónoma+de+Buenos+Aires
 General,Garcia Ana Elena,Billinghurst 1676 - 4 C,Capital Federal,48225992,Anatomia Patologica,https://www.google.com/maps/search/Billinghurst+1676+Cdad.+Autónoma+de+Buenos+Aires
-General,Garcia Avila Christian Daniel,Av. Pueyrredon 1770 - 2 A,Capital Federal,48244539,Traumatologia Y Ortopedia,https://www.google.com/maps/search/Av. Pueyrredon+1770+Cdad.+Autónoma+de+Buenos+Aires
 General,Garcia Enrique,Moreno 50 - 2 D,Ramos Mejia,46561095,Pediatria,https://www.google.com/maps/search/Moreno+50+Ramos Mejia
 General,Garcia Pereira Lidia Beatriz,Av. Directorio 314 - 6 B,Capital Federal,4903-9384 | 4923-3178,"Cirugia Odontologica,Endodoncia,Odontologia General,Odontopediatria,Periodoncia",https://www.google.com/maps/search/Av. Directorio+314+Cdad.+Autónoma+de+Buenos+Aires
 General,Garcia Silvina,Rivadavia 21434,Ituzaingo,4624-4093 | 15-5477-4309 whattsapp,Odontologia General,https://www.google.com/maps/search/Rivadavia+21434+Ituzaingo
@@ -421,8 +398,6 @@ General,Gigliotti Silvia Mabel,Zufriategui 730 - 1,Ituzaingo,15-5741-8299,"Odont
 General,Gil Lidia - Centro De Referencia Cereme,Av. Pueyrredon 1504 - 8 2,Capital Federal,4827-4766 | 4827-5136,Clinica Medica,https://www.google.com/maps/search/Av. Pueyrredon+1504+Cdad.+Autónoma+de+Buenos+Aires
 General,Gindin Adrian Dario,Sarmiento 1874 - PB C,Capital Federal,43742699,"Clinica Medica,Pediatria",https://www.google.com/maps/search/Sarmiento+1874+Cdad.+Autónoma+de+Buenos+Aires
 General,Gomez Haydee,Av. Forest 1519 - C,Capital Federal,4555-7240 | 15-6368-8571,Odontologia General,https://www.google.com/maps/search/Av. Forest+1519+Cdad.+Autónoma+de+Buenos+Aires
-General,Gordin Pablo Benito,Av. Estado De Israel 4354 - 10 A,Capital Federal,48618247 | 48622388,"Ginecologia,Obstetricia,Tocoginecologia",https://www.google.com/maps/search/Av. Estado De Israel+4354+Cdad.+Autónoma+de+Buenos+Aires
-General,Gorla Martin Ricardo,Av. Diaz Velez 4363,Capital Federal,NULL,Urologia,https://www.google.com/maps/search/Av. Diaz Velez+4363+Cdad.+Autónoma+de+Buenos+Aires
 General,Grillo Maria Ines Elena,Guemes 3622 - 6 B,Capital Federal,1127558755,Alergia,https://www.google.com/maps/search/Guemes+3622+Cdad.+Autónoma+de+Buenos+Aires
 General,Grinstein Anahi - Centro De Referencia Cereme,Av. Pueyrredon 1504 - 8 2,Capital Federal,4827-4766 | 4827-5136,Ginecologia,https://www.google.com/maps/search/Av. Pueyrredon+1504+Cdad.+Autónoma+de+Buenos+Aires
 General,Grondona Alejandro Jorge,Av. Santa Fe 1159 - PB 2,Capital Federal,48167186 | 48167187,Oftalmologia,https://www.google.com/maps/search/Av. Santa Fe+1159+Cdad.+Autónoma+de+Buenos+Aires
@@ -433,8 +408,6 @@ General,Guichou Daniel,Calle 54 436,La Plata,0221-4835453 | 0221-5608355,Odontol
 General,Henry Emilio Carlos,Peña 2222 - 4 35,Capital Federal,48068985,Clinica Medica,https://www.google.com/maps/search/Peña+2222+Cdad.+Autónoma+de+Buenos+Aires
 General,Hospital De Clinicas Jose De San Martin,Av. Cordoba 2351,Capital Federal,59508000,"Alergia,Anatomia Patologica,Andrologia,Cardiologia,Cirugia Cabeza Y Cuello,Cirugia Cardiovascular,Cirugia Cardiovascular Pediatrica,Cirugia De La Mano,Cirugia General,Clinica Medica,Clinica Oncologica,Clinica Quirurgica,Coloproctologia,Dermatologia,Dermatologia Pediatrica,Diabetologia,Diagnostico Por Imagenes,Endocrinologia,Flebologia,Fonoaudiologia,Gastroenterologia,Genetica Y Esterilidad,Gerontologia,Ginecologia,Hematologia,Hematologia Pediatrica,Hemodialisis-Dialisis Renal,Hemoterapia,Infectologia,Internacion Generales,Kinesiologia,Mastologia,Nefrologia,Neonatologia,Neumonologia,Neurocirugia,Neurologia,Nutricion,Obstetricia,Oftalmologia,Oftalmologia Pediatrica,Oncologia,Oncologia Pediatrica,Otorrinolaringologia,Patologia,Patologia Mamaria,Pediatria,Proctologia,Reumatologia,Terapia Intensiva,Tocoginecologia,Traumatologia Y Ortopedia,Urologia",https://www.google.com/maps/search/Av. Cordoba+2351+Cdad.+Autónoma+de+Buenos+Aires
 General,Huchan Raquel Maria,Chenault 60,Avellaneda,4203-4765,"Odontologia General,Odontopediatria",https://www.google.com/maps/search/Chenault+60+Avellaneda
-General,Iannuccilli Jose Luis,Av. Belgrano 3988,Capital Federal,49586486 | 49815974,"Ginecologia,Obstetricia,Tocoginecologia",https://www.google.com/maps/search/Av. Belgrano+3988+Cdad.+Autónoma+de+Buenos+Aires
-General,Igarzabal Carlos Enrique Alejandro,Arenales 2463 - 4 D,Capital Federal,48260921,Flebologia,https://www.google.com/maps/search/Arenales+2463+Cdad.+Autónoma+de+Buenos+Aires
 General,Iglesias Virginia Mariel,Salta 138 - 3 A,Moron,4483-5595,"Endodoncia,Odontologia General,Odontopediatria",https://www.google.com/maps/search/Salta+138+Moron
 General,Illescas Paula Teresa,Bolivar 263,Capital Federal,43310734,Clinica Medica,https://www.google.com/maps/search/Bolivar+263+Cdad.+Autónoma+de+Buenos+Aires
 General,Imac - Instituto Medico Alta Complejidad - C.P.N. S.A.,Av. Diaz Velez 4363,Capital Federal,0810-222-0003 | 52992900 | 59568200 | 11-2154-6419 | 1136834887,"Analisis Clinicos,Anatomia Patologica,Cardiologia,Cirugia Cabeza Y Cuello,Cirugia Cardiovascular,Cirugia General,Cirugia Toraxica,Clinica - Sanatorio - Instituto,Clinica Medica,Dermatologia,Diabetologia,Diagnostico Por Imagenes,Diagnostico Y Tratamiento,Endocrinologia,Flebologia,Gastroenterologia,Ginecologia,Hematologia,Hemodinamia,Hemoterapia,Infectologia,Internacion Generales,Nefrologia,Neumonologia,Neurocirugia,Neurologia,Nutricion,Oncologia,Otorrinolaringologia,Proctologia,Reumatologia,Traumatologia Y Ortopedia,Urgencias 24 Hs,Urologia",https://www.google.com/maps/search/Av. Diaz Velez+4363+Cdad.+Autónoma+de+Buenos+Aires
@@ -454,7 +427,6 @@ General,Investigaciones Medicas S.A,Viamonte 1871,Capital Federal,41272800,"Anal
 General,Investigaciones Vasculares S.A,Av. Patricias Argentinas 351,Capital Federal,48662895 | 2896,"Cirugia Cardiovascular,Diagnostico Y Tratamiento,Hemodinamia",https://www.google.com/maps/search/Av. Patricias Argentinas+351+Cdad.+Autónoma+de+Buenos+Aires
 General,Ivaldi Virginia Beatriz,Martin Y Omar 31 - 1 C,San Isidro,4747-8377,Odontologia General,https://www.google.com/maps/search/Martin Y Omar+31+San Isidro
 General,Izsak Miriam,Bolivar 1303,Hurlingham,4665-0055,"Endodoncia,Odontologia General,Periodoncia",https://www.google.com/maps/search/Bolivar+1303+Hurlingham
-General,Jaimovich Jorge Alejandro Issac,Bynnon 2302,Adrogue,42940235,"Clinica Medica,Pediatria",https://www.google.com/maps/search/Bynnon+2302+Adrogue
 General,Jares Edgardo,Rivadavia 14276,Ramos Mejia,4469-6900 | 4469-6950,"Alergia,Inmunologia",https://www.google.com/maps/search/Rivadavia+14276+Ramos Mejia
 General,Jares Edgardo,Sucre 2486 - 2 D,Capital Federal,4787-1946,"Alergia,Inmunologia",https://www.google.com/maps/search/Sucre+2486+Cdad.+Autónoma+de+Buenos+Aires
 General,Juarez Matorras Edith Y Equip,La Pampa 2132 - PB G,Capital Federal,4788-4167,"Endodoncia,Odontologia General,Odontopediatria",https://www.google.com/maps/search/La Pampa+2132+Cdad.+Autónoma+de+Buenos+Aires
@@ -463,7 +435,6 @@ General,Kelen Adriana Noemi,San Luis 2740 2740,Capital Federal,49637755 | 3434,C
 General,Kerzberg Eduardo Mario,Gral. Lucio Mansilla 2870 - 2 B,Capital Federal,49620289 | 11-5820-5404,Reumatologia,https://www.google.com/maps/search/Gral. Lucio Mansilla+2870+Cdad.+Autónoma+de+Buenos+Aires
 General,Kes Segismundo,Av. S. Ortiz 258 - 5 B,Capital Federal,49824933,Urologia,https://www.google.com/maps/search/Av. S. Ortiz+258+Cdad.+Autónoma+de+Buenos+Aires
 General,Kilzi Juan Carlos Y Equipo,Av Angel Gallardo 391 - PB A,Capital Federal,4855-5201,"Endodoncia,Odontologia General",https://www.google.com/maps/search/Av Angel Gallardo+391+Cdad.+Autónoma+de+Buenos+Aires
-General,Kramer Cristian Eduardo,Av. Santa Fe 3242 - 3 H,Capital Federal,3983 1731,Nefrologia,https://www.google.com/maps/search/Av. Santa Fe+3242+Cdad.+Autónoma+de+Buenos+Aires
 General,Lacabe Esteban,Calle 43 845,La Plata,0221-15-5949259 whattsapp,"Cirugia Odontologica,Endodoncia,Odontologia General,Periodoncia",https://www.google.com/maps/search/Calle 43+845+La Plata
 General,Laltra Salud,Bolivar 422,Merlo,0237-4635658 | 15-6769-8923 15-5710-9264,"Cirugia Odontologica,Endodoncia,Odontologia General,Odontopediatria,Radiologia,Urgencias 24 Hs",https://www.google.com/maps/search/Bolivar+422+Merlo
 General,Laltra Salud,Uruguay 87,Merlo,0237-4635658 | 15-6769-8923 15-5710-9264,"Cirugia Odontologica,Endodoncia,Odontologia General,Odontopediatria,Radiologia,Urgencias 24 Hs",https://www.google.com/maps/search/Uruguay+87+Merlo
@@ -471,13 +442,10 @@ General,Larrea Leon Inmaculada,Av. Rivadavia 5170 - 6 B,Capital Federal,4903-414
 General,Las Araucarias,Martin Fierro 3438,Ituzaingo,NULL,Rehabilitacion Patologias Esp.,https://www.google.com/maps/search/Martin Fierro+3438+Ituzaingo
 General,Launay Mariel Norma,Bartolome Mitre 1738 - 4 E,Capital Federal,4373-7493,Odontologia General,https://www.google.com/maps/search/Bartolome Mitre+1738+Cdad.+Autónoma+de+Buenos+Aires
 General,Lausirica Carlos,Lautaro 204 - PB D,Capital Federal,15-5571-6094,"Cirugia Odontologica,Endodoncia,Odontologia General",https://www.google.com/maps/search/Lautaro+204+Cdad.+Autónoma+de+Buenos+Aires
-General,Legorburu Patricia Jaqueline,Tinogasta 6046 - 3,Capital Federal,11-2506-4132,Traumatologia Y Ortopedia,https://www.google.com/maps/search/Tinogasta+6046+Cdad.+Autónoma+de+Buenos+Aires
 General,Lerner Martin,Paraguay 2342 - 7 A,Capital Federal,49611257,Cirugia Bariatrica - Modulo,https://www.google.com/maps/search/Paraguay+2342+Cdad.+Autónoma+de+Buenos+Aires
 General,Lewi Daniel Sergio,Junin 969 - 10 A,Capital Federal,49628927 | 49660341,Oncologia,https://www.google.com/maps/search/Junin+969+Cdad.+Autónoma+de+Buenos+Aires
 General,Leyria Hernan Javier,Darwin 878,Capital Federal,15 6587 7007,Kinesiologia A Domicilio,https://www.google.com/maps/search/Darwin+878+Cdad.+Autónoma+de+Buenos+Aires
-General,Lopez Maria Emilia - Escobar,Rivadavia 878,Escobar,03488420188,Nutricion,https://www.google.com/maps/search/Rivadavia+878+Escobar
 General,Lorenzo Analia Lilian,Arenales 1515,Florida,47913529,Pediatria,https://www.google.com/maps/search/Arenales+1515+Florida
-General,Lorenzo Fabian Omar,Marcelo T. De Alvear 2259 - 7,Capital Federal,57772568,"Ginecologia,Tocoginecologia",https://www.google.com/maps/search/Marcelo T. De Alvear+2259+Cdad.+Autónoma+de+Buenos+Aires
 General,Macias Maria Alejandra,Palpa 2570 - PB B,Capital Federal,47885673,Ginecologia,https://www.google.com/maps/search/Palpa+2570+Cdad.+Autónoma+de+Buenos+Aires
 General,Malinowski Olga Lilia,Av. Directorio 4535,Capital Federal,4683-1367,Odontologia General,https://www.google.com/maps/search/Av. Directorio+4535+Cdad.+Autónoma+de+Buenos+Aires
 General,Mascheroni Osvaldo,Av. Santa Fe 3553 - 2 8,Capital Federal,4831-0378 | 4832-0971,Cardiologia,https://www.google.com/maps/search/Av. Santa Fe+3553+Cdad.+Autónoma+de+Buenos+Aires
@@ -486,11 +454,8 @@ General,Mayer Carlos A.,Av.Rivadavia 6366 - 2 D,Capital Federal,4631-8812 | 4633
 General,Melo Luis Marcelo,M. T. De Alvear 2442 - PB 1,Capital Federal,1161883070 | 49644040,Traumatologia Y Ortopedia,https://www.google.com/maps/search/M. T. De Alvear+2442+Cdad.+Autónoma+de+Buenos+Aires
 General,Meola Arnoldo-Coradent,Av Calchaqui 4508,Quilmes Oeste,4210-0079 /4256-0693 | 4210-0079 /4256-0693,Radiologia,https://www.google.com/maps/search/Av Calchaqui+4508+Quilmes Oeste
 General,Meola Arnoldo-Coradent,Calle 149 1547,Quilmes Oeste,4210-0079 /4256-0693 | 4210-0079 /4256-0693,Radiologia,https://www.google.com/maps/search/Calle 149+1547+Quilmes Oeste
-General,Merlo Maria Fernanda,Darregueira 2244 - PB 3,Capital Federal,47717105 | 1153276699,Oftalmologia,https://www.google.com/maps/search/Darregueira+2244+Cdad.+Autónoma+de+Buenos+Aires
-General,Merlo Maria Fernanda,Darregueyra 2244 - PB 3,Capital Federal,47717105 | 1153276699,Oftalmologia,https://www.google.com/maps/search/Darregueyra+2244+Cdad.+Autónoma+de+Buenos+Aires
 General,Messuti Horacio - Caba,Av. Juan B.Alberdi 4255,Capital Federal,46720857,Cardiologia,https://www.google.com/maps/search/Av. Juan B.Alberdi+4255+Cdad.+Autónoma+de+Buenos+Aires
 General,Messuti Horacio Ernesto,Laprida 1963 - 1 C,Capital Federal,48059414,Cardiologia,https://www.google.com/maps/search/Laprida+1963+Cdad.+Autónoma+de+Buenos+Aires
-General,Mila Teresa,Virrey Del Pino 2428 - 6 41,Capital Federal,47852979 | 11-2245-3037,Ginecologia,https://www.google.com/maps/search/Virrey Del Pino+2428+Cdad.+Autónoma+de+Buenos+Aires
 General,Milei Jose,Av. Cordoba 2216 - 11 A,Capital Federal,49510366 | 49513267 | 49520844 | 49529659 | 11-7614-9553,Cardiologia,https://www.google.com/maps/search/Av. Cordoba+2216+Cdad.+Autónoma+de+Buenos+Aires
 General,Molina Miguel Angel,Av. Del Trabajo 374 - 3,Don Torcuato,4741-0544 | 4741-0544,Radiologia,https://www.google.com/maps/search/Av. Del Trabajo+374+Don Torcuato
 General,Molina Miguel Angel,Urquiza 1198,Don Torcuato,4741-0544 | 4741-0544,Radiologia,https://www.google.com/maps/search/Urquiza+1198+Don Torcuato
@@ -501,7 +466,6 @@ General,Negri Claudia Viviana,Larrea 1007 - 9 B,Capital Federal,1544240585,Psico
 General,Niño Viviana Andrea,Virrey Olaguer Y Feliu 2462 - 3 A,Capital Federal,1122990865,"Dermatologia,Dermatologia Pediatrica",https://www.google.com/maps/search/Virrey Olaguer Y Feliu+2462+Cdad.+Autónoma+de+Buenos+Aires
 General,Nostas Alberto - Consultorio Junin,Junin 1054 - PB F,Capital Federal,48254017 | 48291654,Flebologia,https://www.google.com/maps/search/Junin+1054+Cdad.+Autónoma+de+Buenos+Aires
 General,Nostas Alberto - Consultorio Rivadavia,Av. Rivadavia 4704 - 6 G,Capital Federal,48318311,Flebologia,https://www.google.com/maps/search/Av. Rivadavia+4704+Cdad.+Autónoma+de+Buenos+Aires
-General,Novick Fernando,Estado De Israel 4637 - 3 E,Capital Federal,48546673,"Ginecologia,Obstetricia,Tocoginecologia",https://www.google.com/maps/search/Estado De Israel+4637+Cdad.+Autónoma+de+Buenos+Aires
 General,Noya Rodolfo Gustavo,Av Olazabal 5124 - PB 5,Capital Federal,11-6113-6049,"Uroginecologia,Urologia",https://www.google.com/maps/search/Av Olazabal+5124+Cdad.+Autónoma+de+Buenos+Aires
 General,Odomn,25 De Mayo 23 - 5 A,Moron,4627-1150 / 4627-7743 | 6071-7662,"Endodoncia,Odontologia General,Odontopediatria,Periodoncia",https://www.google.com/maps/search/25 De Mayo+23+Moron
 General,Odomn,C. Larralde 660 - 1 3,Moron,4627-1150 / 4627-7743 | 6071-7662,"Endodoncia,Odontologia General,Odontopediatria,Periodoncia",https://www.google.com/maps/search/C. Larralde+660+Moron
@@ -512,7 +476,6 @@ General,Odontologia Integral Avellaned,Alsina 90 - 2,Avellaneda,4201-7195,Urgenc
 General,Odontologia Integral Lomas,Av. Meeks 71 - 1,Lomas De Zamora,4292-3574 | 4245-2901 | 4245-2747,"Cirugia Odontologica,Endodoncia,Odontologia General,Odontopediatria,Urgencias 24 Hs,Urgencias Odontologicas",https://www.google.com/maps/search/Av. Meeks+71+Lomas De Zamora
 General,Olha Silvina - Barrio Norte,Av. Santa Fe 3071 - 3 E,Capital Federal,48268051,Otorrinolaringologia,https://www.google.com/maps/search/Av. Santa Fe+3071+Cdad.+Autónoma+de+Buenos+Aires
 General,Olha Silvina - Caballito,Otamendi 629,Capital Federal,49828184,Otorrinolaringologia,https://www.google.com/maps/search/Otamendi+629+Cdad.+Autónoma+de+Buenos+Aires
-General,Olivera Maria Vristina,Rosario 876 - 1,Capital Federal,1144160594,Cirugia Plastica Y Reparadora,https://www.google.com/maps/search/Rosario+876+Cdad.+Autónoma+de+Buenos+Aires
 General,Oncologia Metropolitana S.A.,Lavalle 1430 - 2 C,Capital Federal,43717293 | 43730007 | 52728000 | 52728015,"Clinica Oncologica,Oncologia",https://www.google.com/maps/search/Lavalle+1430+Cdad.+Autónoma+de+Buenos+Aires
 General,Oprin Y Colaboradores,Boedo 325 - 9 A,Lomas De Zamora,4243-0492,"Cirugia Odontologica,Odontologia General",https://www.google.com/maps/search/Boedo+325+Lomas De Zamora
 General,Orsi Paola Gabriela (Grupo Kinesis),Alvear 1037,Quilmes,42532726 | 42539788 | 42541545,Kinesiologia,https://www.google.com/maps/search/Alvear+1037+Quilmes
@@ -521,7 +484,6 @@ General,Pachetti Marisa Andrea,Adolfo Alsina 173 - 12 A,Avellaneda,42299099 | 62
 General,Paez Logioia Jorge Alberto,Virrey Del Pino 2428 - 3 21,Capital Federal,47817535,Kinesiologia,https://www.google.com/maps/search/Virrey Del Pino+2428+Cdad.+Autónoma+de+Buenos+Aires
 General,Paez Logiola Jorge,Psje Bertres 321 - PB 1,Capital Federal,1121586885,Kinesiologia,https://www.google.com/maps/search/Psje Bertres+321+Cdad.+Autónoma+de+Buenos+Aires
 General,Palavidini Laura Elena,Gandara 2377,Capital Federal,45228925,"Clinica Medica,Pediatria",https://www.google.com/maps/search/Gandara+2377+Cdad.+Autónoma+de+Buenos+Aires
-General,Pardo Juan Ignacio - Capital Federal,Av. Cerviño 4407 - 3,Capital Federal,11-2746-0772,"Cirugia Vascular,Flebologia",https://www.google.com/maps/search/Av. Cerviño+4407+Cdad.+Autónoma+de+Buenos+Aires
 General,Pazos Monica Nelida,Av. De Los Incas 4630,Capital Federal,45212133 | 1164752908,Dermatologia,https://www.google.com/maps/search/Av. De Los Incas+4630+Cdad.+Autónoma+de+Buenos+Aires
 General,Pedevilla Luis Andres,Av. Santa Fe 2441 - PB A,Capital Federal,48213191 | 48233703,Pediatria,https://www.google.com/maps/search/Av. Santa Fe+2441+Cdad.+Autónoma+de+Buenos+Aires
 General,Pediatria Palermo S.R.L.,Paraguay 3949,Capital Federal,48234177 | 6277,"Cardiologia Pediatrica,Dermatologia Pediatrica,Endocrinologia Pediatrica,Gastroenterologia Pedriatica,Nefrologia Pediatrica,Nutricion Pediatrica,Pediatria,Traumatologia Infantil",https://www.google.com/maps/search/Paraguay+3949+Cdad.+Autónoma+de+Buenos+Aires
@@ -536,7 +498,6 @@ General,Pirozzo Mariano,"O""Higgins 2062",Capital Federal,47881375 | 47889336 | 
 General,Pizzetti Javier,Av. San Martin 6185 - 2 A,Capital Federal,15-3073-6185 WHATSAPP,"Cirugia Odontologica,Endodoncia,Odontologia General,Periodoncia",https://www.google.com/maps/search/Av. San Martin+6185+Cdad.+Autónoma+de+Buenos+Aires
 General,Podlubne Iosef,Junin 1082,Capital Federal,48234844 | 57782720,Opticas,https://www.google.com/maps/search/Junin+1082+Cdad.+Autónoma+de+Buenos+Aires
 General,Policlínica Privada Ferreyra Araya,Av. Gral. Paz 13049,Lomas Del Mirador,4652-5660 | 7513-2246,"Cardiologia,Clinica Medica,Ginecologia,Pediatria",https://www.google.com/maps/search/Av. Gral. Paz+13049+Lomas Del Mirador
-General,Porto Diego Alberto,Av. Libertador 6966 - 5 C,Capital Federal,47870486 | 11-5609-9935,"Cirugia De Columna,Neurocirugia,Neurocirugia Pediatrica,Tratamiento Del Dolor",https://www.google.com/maps/search/Av. Libertador+6966+Cdad.+Autónoma+de+Buenos+Aires
 General,Pose Vallarino Mariana,Av. San Martin 1479,Lanus,4266-0408,Pediatria,https://www.google.com/maps/search/Av. San Martin+1479+Lanus
 General,Presa Pablo Daniel,Pedernera 463,Capital Federal,46115240,Pediatria,https://www.google.com/maps/search/Pedernera+463+Cdad.+Autónoma+de+Buenos+Aires
 General,Press Sara Liliana,Belgrano 3953 - PB C,San Martin,4754-5991,"Odontologia General,Odontopediatria",https://www.google.com/maps/search/Belgrano+3953+San Martin
@@ -551,11 +512,9 @@ General,Rey Claudia Cristina,Av. Cabildo 1131 - 3 9,Capital Federal,1139488901 |
 General,Rey Isla Marta,Viamonte 1889 - PB A,Capital Federal,4812-1377 | 11-5801-9128,Clinica Medica,https://www.google.com/maps/search/Viamonte+1889+Cdad.+Autónoma+de+Buenos+Aires
 General,Rico Nora Haydee,Julian Alvarez 2010 - 4 B,Capital Federal,48259053,Discapacidad,https://www.google.com/maps/search/Julian Alvarez+2010+Cdad.+Autónoma+de+Buenos+Aires
 General,Riestra Maria Angelica,Medrano 1775 - 14 D,Capital Federal,1568174865,Nutricion,https://www.google.com/maps/search/Medrano+1775+Cdad.+Autónoma+de+Buenos+Aires
-General,Rigada Elizabeth Maria,Vidal 1878 - PB A,Capital Federal,47811154 | 1156949860 | 1166404291,Nutricion,https://www.google.com/maps/search/Vidal+1878+Cdad.+Autónoma+de+Buenos+Aires
 General,Risso Gustavo - Villa Devoto,Pedro Lozano 4237,Capital Federal,1151145300 | 45673051 | 46482202 | 53000391,"Cardiologia,Clinica Medica",https://www.google.com/maps/search/Pedro Lozano+4237+Cdad.+Autónoma+de+Buenos+Aires
 General,Risso Gustavo - Villa Ortuzar,Donado 1175 - 1 E,Capital Federal,1151145300 | 45548273 | 46482202,"Cardiologia,Clinica Medica",https://www.google.com/maps/search/Donado+1175+Cdad.+Autónoma+de+Buenos+Aires
 General,Rives Luis Eduardo,Av. Santa Fe 2036 - 2 A,Capital Federal,48212719 | 48257601,Patologia Mamaria,https://www.google.com/maps/search/Av. Santa Fe+2036+Cdad.+Autónoma+de+Buenos+Aires
-General,Rocco Guillermo Oscar,Hipolito Yrigoyen 10876,Lomas De Zamora,1549603278 | 42316182,Pediatria,https://www.google.com/maps/search/Hipolito Yrigoyen+10876+Lomas De Zamora
 General,Rodriguez Antonio Guillermo,Avda. Pedro Goyena 642 - PB,Capital Federal,49225314 | 49232870,Oftalmologia,https://www.google.com/maps/search/Avda. Pedro Goyena+642+Cdad.+Autónoma+de+Buenos+Aires
 General,Rodriguez Cortes Enrique Guil,Juramento 2715 - 1 G,Capital Federal,4783-8360,"Endodoncia,Odontologia General",https://www.google.com/maps/search/Juramento+2715+Cdad.+Autónoma+de+Buenos+Aires
 General,Rodriguez Garcia Maria Natalia,Yerbal 592 - 3 7,Capital Federal,4902-5196,"Endodoncia,Odontologia General,Odontopediatria",https://www.google.com/maps/search/Yerbal+592+Cdad.+Autónoma+de+Buenos+Aires
@@ -582,19 +541,14 @@ General,Sanchez Del Roscio Hernan,Hipolito Yrigoyen 92,Martinez,4667-1541 | 4792
 General,Sanchez Del Roscio Hernan,Roca 1077,Martinez,4667-1541 | 4792-3193,Odontologia General,https://www.google.com/maps/search/Roca+1077+Martinez
 General,Santirosi Silvina,Alvarez Thomas 1144 - PB,Capital Federal,4551-4656,"Endodoncia,Odontologia General",https://www.google.com/maps/search/Alvarez Thomas+1144+Cdad.+Autónoma+de+Buenos+Aires
 General,Saroka Alex,Av Estado De Israel 4354 - 10 A,Capital Federal,1144935661 | 48618247,"Ginecologia,Obstetricia,Tocoginecologia",https://www.google.com/maps/search/Av Estado De Israel+4354+Cdad.+Autónoma+de+Buenos+Aires
-General,Sartor Federico Daniel,Aguilar 2580,Capital Federal,52632580,"Cirugia De Columna,Cirugia De Columna Infantil",https://www.google.com/maps/search/Aguilar+2580+Cdad.+Autónoma+de+Buenos+Aires
 General,Saullo Martin Gabriel,Riobamba 340 - 5 B,Capital Federal,4952-1546 | 4372-7766 | 15-5922-9731wattsapp,Periodoncia,https://www.google.com/maps/search/Riobamba+340+Cdad.+Autónoma+de+Buenos+Aires
-General,Scalise Claudia Roxana,Av. Santa Fe 1886 - 1 A,Capital Federal,48117151,Tocoginecologia,https://www.google.com/maps/search/Av. Santa Fe+1886+Cdad.+Autónoma+de+Buenos+Aires
 General,Scorticati Maria Esperanza,Paraguay 2342 - 17 A,Capital Federal,49630987 | 49636346,"Ginecologia,Tocoginecologia",https://www.google.com/maps/search/Paraguay+2342+Cdad.+Autónoma+de+Buenos+Aires
 General,Seara Natacha - Recoleta,Av. Callao 1564 - PB,Capital Federal,11-2783-5527,"Dermatologia,Dermatologia Pediatrica",https://www.google.com/maps/search/Av. Callao+1564+Cdad.+Autónoma+de+Buenos+Aires
 General,Sede Central,Tte. Gral. Peron 3931,Capital Federal,49581213,Oncologia,https://www.google.com/maps/search/Tte. Gral. Peron+3931+Cdad.+Autónoma+de+Buenos+Aires
 General,Segui Marcelo,Ayacucho 832 - 8 D,Capital Federal,1165794325,Cardiologia,https://www.google.com/maps/search/Ayacucho+832+Cdad.+Autónoma+de+Buenos+Aires
 General,Serantes Adriana,España 10 - 1 D,Tigre,4731-9369,"Endodoncia,Odontologia General",https://www.google.com/maps/search/España+10+Tigre
 General,Sernani Liliana,Av. Rivadavia 13 - A,Ramos Mejia,4656-7214 | 4469-0916,"Cirugia Odontologica,Odontologia General",https://www.google.com/maps/search/Av. Rivadavia+13+Ramos Mejia
-General,Seveso Luis,Gorostiaga 2419,Capital Federal,1153276699,Traumatologia Y Ortopedia,https://www.google.com/maps/search/Gorostiaga+2419+Cdad.+Autónoma+de+Buenos+Aires
-General,Siufi Federico Hernan,Luis Viale 2259,Capital Federal,45811001,Pediatria,https://www.google.com/maps/search/Luis Viale+2259+Cdad.+Autónoma+de+Buenos+Aires
 General,Snaidas Lazaro,Av. Santa Fe 1955 - 1 E,Capital Federal,4812-5957 | 4816-0633,Ginecologia,https://www.google.com/maps/search/Av. Santa Fe+1955+Cdad.+Autónoma+de+Buenos+Aires
-General,Soderini Alejandro - Recoleta,Av. Santa Fe 2294 - 2 7,Capital Federal,48231862,Ginecologia,https://www.google.com/maps/search/Av. Santa Fe+2294+Cdad.+Autónoma+de+Buenos+Aires
 General,Solari Ruben Marcelo,Av. Rivadavia 4702 - 3 D,Capital Federal,49023692,Clinica Medica,https://www.google.com/maps/search/Av. Rivadavia+4702+Cdad.+Autónoma+de+Buenos+Aires
 General,Soltz Gustavo Pablo,Almafuerte 3351 - 2 F,San Justo,4484-8499,Odontologia General,https://www.google.com/maps/search/Almafuerte+3351+San Justo
 General,Souto Stella Maris - Capital Federal,Monroe 5163,Capital Federal,45239100,Pediatria,https://www.google.com/maps/search/Monroe+5163+Cdad.+Autónoma+de+Buenos+Aires
@@ -604,17 +558,12 @@ General,Straminsky Vanesa - Belgrano,"O""Higgins 2062 - 5",Capital Federal,47881
 General,Surdo Patricia,Pco.Rodriguez 4644 - 5 A,Villa Ballester,4738-9573 | 15-3336-8284,"Cirugia Odontologica,Odontologia General,Odontopediatria",https://www.google.com/maps/search/Pco.Rodriguez+4644+Villa Ballester
 General,Tatti Silvio Alejandro,Copernico 2390 - PB 5,Capital Federal,48037619,Ginecologia,https://www.google.com/maps/search/Copernico+2390+Cdad.+Autónoma+de+Buenos+Aires
 General,Tomaselli Maria Rosa,Cuenca 3443 - PB 4,Capital Federal,75043514 | 1157599941 | 1169960871,"Ginecologia,Ginecologia Infanto-Juvenil",https://www.google.com/maps/search/Cuenca+3443+Cdad.+Autónoma+de+Buenos+Aires
-General,Torrens Sebastian,Callao 215 - 5 E,Capital Federal,1154959230,Otorrinolaringologia,https://www.google.com/maps/search/Callao+215+Cdad.+Autónoma+de+Buenos+Aires
 General,Underner Sebastian Andres,Panamericana Km 54.5 Pilar Office - 3 10,Pilar,0230-437-4066 | 15-2754-8709,"Cirugia Odontologica,Endodoncia,Odontologia General,Odontopediatria,Periodoncia",https://www.google.com/maps/search/Panamericana Km 54.5 Pilar Office++Pilar
 General,Urosalud - Capital Federal,Ciudad De La Paz 1596,Capital Federal,47876495,"Uroginecologia,Urologia",https://www.google.com/maps/search/Ciudad De La Paz+1596+Cdad.+Autónoma+de+Buenos+Aires
-General,Valentini Roberto,Av. Callao 875 - 2 D,Capital Federal,1166472386,Traumatologia Y Ortopedia,https://www.google.com/maps/search/Av. Callao+875+Cdad.+Autónoma+de+Buenos+Aires
 General,Valverde Carlos Gaston,Mansilla 4093 - PB,Capital Federal,1157270704,Oftalmologia,https://www.google.com/maps/search/Mansilla+4093+Cdad.+Autónoma+de+Buenos+Aires
-General,Vazquez Andres Martin,Larrea 1147 - 4 B,Capital Federal,46015711 | 48230780,"Andrologia,Urologia",https://www.google.com/maps/search/Larrea+1147+Cdad.+Autónoma+de+Buenos+Aires
 General,Vazquez Blanco Manuel,Av. Corrientes 4667 - 3 15,Capital Federal,48623298,Cardiologia,https://www.google.com/maps/search/Av. Corrientes+4667+Cdad.+Autónoma+de+Buenos+Aires
 General,Vazquez Jose,Larrea 1147 - 4 B,Capital Federal,48230780 | 49015711,"Andrologia,Urologia",https://www.google.com/maps/search/Larrea+1147+Cdad.+Autónoma+de+Buenos+Aires
 General,Vazquez Matias Ariel Y Equipo,Calle 141 2388,Berazategui,4216-4005,"Cirugia Odontologica,Endodoncia,Odontologia General,Odontopediatria,Periodoncia",https://www.google.com/maps/search/Calle 141+2388+Berazategui
-General,Velazquez Humberto,Av. Rivadavia 5748 - PB B,Capital Federal,44311561,Obstetricia,https://www.google.com/maps/search/Av. Rivadavia+5748+Cdad.+Autónoma+de+Buenos+Aires
-General,Ventola Pablo Damian,Juan Bautista Alberdi 1437,Capital Federal,1134300624 | 39839100,Oftalmologia,https://www.google.com/maps/search/Juan Bautista Alberdi+1437+Cdad.+Autónoma+de+Buenos+Aires
 General,Vescovo Virginia,Almafuerte 2560 - 1 2,Castelar,6073-7413 | 15-4569-2057,Odontologia General,https://www.google.com/maps/search/Almafuerte+2560+Castelar
 General,Viguie Javier Ignacio,Billinghurst 2335 - 4 B,Capital Federal,11-3089-2580,Cirugia Plastica Y Reparadora,https://www.google.com/maps/search/Billinghurst+2335+Cdad.+Autónoma+de+Buenos+Aires
 General,Vior Maria Martha,Calle 119 162,La Plata,0221-4829164,"Odontologia General,Odontopediatria",https://www.google.com/maps/search/Calle 119+162+La Plata
@@ -622,7 +571,5 @@ General,Vision Salud S.A,R De Escalada De San Martin 1121,Moron,44602630 | 44606
 General,Vulcano Gabriela Mara Y Equipo,Gral. Paz 771,Quilmes Este,15-2536-9130,"Cirugia Odontologica,Odontologia General,Odontopediatria,Periodoncia,Urgencias Odontologicas",https://www.google.com/maps/search/Gral. Paz+771+Quilmes Este
 General,Wischñevsky Melina,Ventana 3892 - 1 16,Capital Federal,4911-9594,"Cirugia Odontologica,Endodoncia,Odontologia General,Odontopediatria",https://www.google.com/maps/search/Ventana+3892+Cdad.+Autónoma+de+Buenos+Aires
 General,Yacachury Gisela-Calle Avalos,Avalos 1920 - 1,Capital Federal,45235727,"Ginecologia,Tocoginecologia",https://www.google.com/maps/search/Avalos+1920+Cdad.+Autónoma+de+Buenos+Aires
-General,Yampolsky Claudio,Av. Cordoba 6561 - 8 B,Capital Federal,1144113280,Neurocirugia,https://www.google.com/maps/search/Av. Cordoba+6561+Cdad.+Autónoma+de+Buenos+Aires
 General,Yoshida Sebastian,Av. Calchaqui 584,Berazategui,4275-6975,"Odontologia General,Odontopediatria",https://www.google.com/maps/search/Av. Calchaqui+584+Berazategui
 General,Zager Gustavo,Matheu 1961,Boulogne Sur Mer,4737-5425,"Endodoncia,Odontologia General,Odontopediatria",https://www.google.com/maps/search/Matheu+1961+Boulogne Sur Mer
-General,Zaidenvoren Gabriel Alejandro,Av. Corrientes 4081 - 2 B,Capital Federal,48647883 | 48653778,"Ginecologia,Obstetricia,Tocoginecologia",https://www.google.com/maps/search/Av. Corrientes+4081+Cdad.+Autónoma+de+Buenos+Aires
